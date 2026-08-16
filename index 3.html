@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>La Fleur — Цветочный бутик</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --cream:#FAF6F1;--blush:#F2E4DB;--rose:#C9897A;--rose2:#A86858;
+  --sage:#7A9B8A;--dark:#2C1F1A;--warm:#5C3D2E;--muted:#9B8B85;
+  --border:#E8D8CF;--gold:#C4A882;--light:#FDF9F6;
+}
+body{font-family:"Jost",sans-serif;background:var(--cream);color:var(--dark);font-size:14px;font-weight:300;}
+.page{display:none;}.page.active{display:block;}
+.nav{background:var(--dark);padding:0 16px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:400;font-style:italic;color:var(--gold);letter-spacing:2px;}
+.nav-tabs{display:flex;gap:4px;}
+.nav-tab{background:transparent;color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1);padding:5px 12px;border-radius:20px;font-size:11px;letter-spacing:0.8px;cursor:pointer;transition:all 0.2s;font-family:"Jost",sans-serif;}
+.nav-tab.active{background:var(--rose);color:white;border-color:var(--rose);}
+.nav-phone{color:var(--gold);font-size:11px;text-decoration:none;letter-spacing:0.3px;}
+.hero{background:linear-gradient(160deg,#2C1F1A 0%,#4A2E28 40%,#5C3020 100%);padding:36px 16px 44px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 50%,rgba(201,137,122,0.15),transparent 50%),radial-gradient(circle at 80% 20%,rgba(196,168,130,0.1),transparent 40%);}
+.hero-tag{display:inline-block;border:1px solid rgba(196,168,130,0.35);color:var(--gold);font-size:10px;letter-spacing:3px;text-transform:uppercase;padding:4px 14px;border-radius:20px;margin-bottom:18px;position:relative;}
+.hero h1{font-family:"Cormorant Garamond",serif;font-size:34px;font-weight:300;color:white;line-height:1.2;margin-bottom:10px;letter-spacing:0.5px;position:relative;}
+.hero h1 em{font-style:italic;color:var(--gold);}
+.hero-sub{color:rgba(255,255,255,0.55);font-size:12px;font-weight:300;line-height:1.7;margin-bottom:24px;position:relative;}
+.hero-stats{display:flex;justify-content:center;gap:28px;position:relative;}
+.hst-n{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:400;color:var(--gold);text-align:center;}
+.hst-l{color:rgba(255,255,255,0.35);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-top:2px;text-align:center;}
+.cart-bar{position:sticky;top:54px;z-index:90;background:var(--dark);border-bottom:2px solid var(--rose);padding:9px 16px;display:flex;align-items:center;gap:10px;}
+.cart-info{flex:1;}
+.cart-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);}
+.cart-sum{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:400;color:white;}
+.cart-sum em{color:var(--gold);font-style:normal;}
+.cart-btns{display:flex;gap:6px;flex-shrink:0;}
+.btn-clr{background:none;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.35);padding:6px 10px;border-radius:4px;font-size:11px;cursor:pointer;font-family:"Jost",sans-serif;}
+.btn-ord{background:var(--rose);color:white;border:none;padding:7px 16px;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;font-family:"Jost",sans-serif;}
+.promo{background:var(--blush);padding:8px 16px;display:flex;overflow-x:auto;border-bottom:1px solid var(--border);gap:0;}
+.promo-i{font-size:11px;color:var(--warm);white-space:nowrap;flex-shrink:0;padding-right:16px;margin-right:16px;border-right:1px solid var(--border);}
+.promo-i:last-child{border-right:none;}
+.cats{display:flex;gap:6px;padding:12px 16px;overflow-x:auto;background:white;border-bottom:1px solid var(--border);}
+.cat-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:3px;font-size:11px;letter-spacing:0.8px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.2s;font-family:"Jost",sans-serif;}
+.cat-btn.active{background:var(--dark);border-color:var(--dark);color:white;}
+.wrap{max-width:640px;margin:0 auto;padding:18px 12px 100px;}
+.sec-ttl{font-family:"Cormorant Garamond",serif;font-size:22px;font-weight:300;font-style:italic;color:var(--dark);margin:20px 0 12px;display:flex;align-items:center;gap:12px;}
+.sec-ttl::after{content:"";flex:1;height:1px;background:var(--border);}
+.sec-bdg{font-family:"Jost",sans-serif;font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--rose);background:var(--blush);padding:2px 8px;border-radius:10px;font-style:normal;}
+.combo{background:var(--dark);border-radius:2px;padding:18px;margin-bottom:10px;position:relative;overflow:hidden;}
+.combo::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--rose),var(--gold));}
+.combo-save{position:absolute;top:14px;right:14px;font-family:"Cormorant Garamond",serif;font-size:14px;color:var(--gold);font-style:italic;}
+.combo-ttl{font-family:"Cormorant Garamond",serif;font-size:19px;font-weight:400;color:white;margin-bottom:4px;}
+.combo-desc{color:rgba(255,255,255,0.45);font-size:11px;margin-bottom:12px;line-height:1.6;}
+.combo-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;}
+.ctag{border:1px solid rgba(196,168,130,0.3);color:var(--gold);font-size:10px;padding:2px 9px;border-radius:2px;}
+.combo-bot{display:flex;align-items:center;justify-content:space-between;}
+.combo-old{color:rgba(255,255,255,0.2);font-size:11px;text-decoration:line-through;}
+.combo-new{font-family:"Cormorant Garamond",serif;font-size:22px;font-weight:400;color:var(--gold);}
+.combo-btn{background:var(--rose);color:white;border:none;padding:8px 18px;border-radius:2px;font-size:11px;font-weight:500;cursor:pointer;font-family:"Jost",sans-serif;}
+.products{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.prod{background:white;border-radius:2px;overflow:hidden;box-shadow:0 1px 6px rgba(44,31,26,0.05);position:relative;}
+.prod-rb{position:absolute;top:8px;left:0;background:var(--rose);color:white;font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;padding:2px 9px 2px 7px;clip-path:polygon(0 0,100% 0,88% 100%,0 100%);z-index:1;}
+.prod-rb.sage{background:var(--sage);}.prod-rb.gold{background:var(--gold);color:var(--dark);}
+.prod-img{width:100%;height:125px;display:flex;align-items:center;justify-content:center;font-size:52px;background:linear-gradient(135deg,var(--blush),#F0E2DC);}
+.prod-body{padding:10px 10px 12px;}
+.prod-name{font-family:"Cormorant Garamond",serif;font-size:15px;font-weight:400;color:var(--dark);margin-bottom:3px;line-height:1.2;}
+.prod-desc{font-size:10px;font-weight:300;color:var(--muted);margin-bottom:8px;line-height:1.5;}
+.prod-bot{display:flex;align-items:center;justify-content:space-between;}
+.prod-old{font-size:9px;color:var(--muted);text-decoration:line-through;display:block;}
+.prod-pr{font-family:"Cormorant Garamond",serif;font-size:17px;font-weight:400;color:var(--dark);}
+.prod-pr em{color:var(--rose);font-style:normal;}
+.prod-free{font-size:10px;font-weight:500;color:var(--sage);}
+.add-btn{background:var(--dark);color:white;border:none;width:28px;height:28px;border-radius:2px;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.qty-ctrl{display:flex;align-items:center;gap:3px;}
+.qty-btn{width:24px;height:24px;border:none;border-radius:2px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.qty-m{background:var(--blush);color:var(--dark);}.qty-p{background:var(--dark);color:white;}
+.qty-n{font-size:13px;font-weight:500;min-width:16px;text-align:center;}
+.pop-ov{display:none;position:fixed;inset:0;background:rgba(44,31,26,0.75);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px);}
+.pop-ov.show{display:flex;}
+.pop{background:var(--cream);border-radius:10px 10px 0 0;width:100%;max-width:480px;padding:18px;max-height:78vh;overflow-y:auto;}
+.pop-line{width:34px;height:3px;background:var(--border);border-radius:2px;margin:0 auto 16px;}
+.pop-ttl{font-family:"Cormorant Garamond",serif;font-size:19px;font-weight:400;color:var(--dark);margin-bottom:3px;}
+.pop-sub{font-size:11px;color:var(--muted);margin-bottom:14px;}
+.pop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
+.pop-item{border:1px solid var(--border);border-radius:2px;padding:10px;cursor:pointer;text-align:center;transition:all 0.15s;background:white;}
+.pop-item.sel{border-color:var(--rose);background:var(--blush);}
+.pop-icon{font-size:24px;margin-bottom:4px;}
+.pop-name{font-size:10px;color:var(--dark);margin-bottom:2px;}
+.pop-price{font-family:"Cormorant Garamond",serif;font-size:13px;color:var(--rose);}
+.pop-tot{background:var(--blush);border-radius:2px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.pop-btns{display:flex;gap:6px;}
+.pop-skip{flex:1;background:none;border:1px solid var(--border);color:var(--muted);padding:11px;border-radius:2px;font-size:11px;cursor:pointer;font-family:"Jost",sans-serif;}
+.pop-add{flex:2;background:var(--rose);color:white;border:none;padding:11px;border-radius:2px;font-size:11px;font-weight:500;cursor:pointer;font-family:"Jost",sans-serif;}
+.del-opts{display:flex;gap:6px;margin-bottom:12px;}
+.del-opt{flex:1;border:1px solid var(--border);border-radius:2px;padding:9px;text-align:center;cursor:pointer;transition:all 0.2s;background:white;}
+.del-opt.sel{border-color:var(--rose);background:var(--blush);}
+.del-icon{font-size:16px;margin-bottom:3px;}
+.del-name{font-size:11px;color:var(--dark);}
+.del-price{font-size:10px;color:var(--muted);}
+.slot-wrap{background:white;border:1px solid var(--border);border-radius:2px;padding:10px;margin-bottom:12px;}
+.slot-lbl{font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.slots{display:flex;flex-wrap:wrap;gap:5px;}
+.slot{border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px 11px;border-radius:2px;cursor:pointer;transition:all 0.2s;background:var(--light);}
+.slot.sel{background:var(--dark);border-color:var(--dark);color:white;}
+.slot.off{opacity:0.3;cursor:not-allowed;}
+.ord-sec{background:white;border-radius:2px;padding:16px;margin-top:12px;border:1px solid var(--border);}
+.ord-ttl{font-family:"Cormorant Garamond",serif;font-size:17px;font-weight:400;font-style:italic;color:var(--dark);margin-bottom:12px;}
+.field{margin-bottom:10px;}
+.field-lbl{font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px;}
+.field-inp{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:2px;font-family:"Jost",sans-serif;font-size:13px;font-weight:300;color:var(--dark);background:var(--light);outline:none;transition:border-color 0.2s;}
+.field-inp:focus{border-color:var(--rose);background:white;}
+textarea.field-inp{min-height:55px;resize:vertical;line-height:1.5;}
+.note-inp{width:100%;padding:8px 10px;border:1px dashed var(--gold);border-radius:2px;font-family:"Jost",sans-serif;font-size:13px;font-weight:300;color:var(--dark);background:#FEFAF5;outline:none;min-height:52px;resize:vertical;}
+.total-wrap{background:var(--dark);border-radius:2px;padding:16px;margin-top:12px;}
+.total-rows{margin-bottom:12px;}
+.total-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.06);}
+.total-row:last-child{border:none;}
+.trl{font-size:11px;font-weight:300;color:rgba(255,255,255,0.5);}
+.trr{font-size:11px;font-weight:400;color:rgba(255,255,255,0.85);}
+.ornament{text-align:center;color:var(--gold);font-size:14px;margin:6px 0;opacity:0.4;letter-spacing:4px;}
+.total-fin{display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(196,168,130,0.2);border-radius:2px;padding:10px 12px;margin-bottom:12px;}
+.tf-l{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);}
+.tf-r{font-family:"Cormorant Garamond",serif;font-size:24px;font-weight:400;color:var(--gold);}
+.btn-wa{display:block;width:100%;background:var(--rose);color:white;border:none;padding:13px;border-radius:2px;font-family:"Jost",sans-serif;font-size:12px;font-weight:500;letter-spacing:1px;cursor:pointer;margin-bottom:7px;text-align:center;}
+.btn-call{display:block;width:100%;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);padding:10px;border-radius:2px;font-size:11px;text-align:center;text-decoration:none;font-family:"Jost",sans-serif;}
+.err{display:none;font-size:11px;color:var(--rose);padding:7px 10px;background:var(--blush);border-radius:2px;border-left:3px solid var(--rose);margin-bottom:8px;}
+.lock-sc{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 54px);background:var(--cream);padding:40px 20px;}
+.lock-ico{font-size:36px;margin-bottom:18px;opacity:0.4;}
+.lock-ttl{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:300;font-style:italic;color:var(--dark);margin-bottom:4px;}
+.lock-sub{font-size:11px;font-weight:300;color:var(--muted);margin-bottom:22px;}
+.lock-inp{width:148px;padding:11px;text-align:center;border:1px solid var(--border);border-radius:2px;font-family:"Jost",sans-serif;font-size:16px;font-weight:300;letter-spacing:8px;color:var(--dark);background:white;outline:none;margin-bottom:12px;}
+.lock-inp:focus{border-color:var(--rose);}
+.lock-btn{background:var(--dark);color:white;border:none;padding:9px 28px;border-radius:2px;font-family:"Jost",sans-serif;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;}
+.lock-err{font-size:10px;color:var(--rose);margin-top:10px;opacity:0;transition:opacity 0.3s;}
+.lock-err.show{opacity:1;}
+.rep-wrap{max-width:640px;margin:0 auto;padding:18px 12px 60px;}
+.rep-hd{background:var(--dark);border-radius:2px;padding:16px;margin-bottom:14px;}
+.rep-hd h2{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:300;font-style:italic;color:var(--gold);margin-bottom:12px;}
+.rep-fs{display:flex;gap:5px;flex-wrap:wrap;}
+.f-btn{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.45);border:none;padding:5px 12px;border-radius:2px;font-size:10px;cursor:pointer;transition:all 0.2s;font-family:"Jost",sans-serif;}
+.f-btn.active{background:var(--rose);color:white;}
+.rep-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.sc{background:white;border-radius:2px;padding:12px;text-align:center;border:1px solid var(--border);}
+.sc-n{font-family:"Cormorant Garamond",serif;font-size:22px;font-weight:400;color:var(--rose);}
+.sc-l{font-size:8px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:2px;}
+.rep-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.rep-tl{font-family:"Cormorant Garamond",serif;font-size:17px;font-weight:300;font-style:italic;color:var(--dark);}
+.clr-btn{background:none;border:1px solid var(--border);color:var(--muted);font-size:9px;padding:4px 10px;border-radius:2px;cursor:pointer;font-family:"Jost",sans-serif;}
+.ord-list{display:flex;flex-direction:column;gap:7px;}
+.oc{background:white;border-radius:2px;padding:12px;border:1px solid var(--border);border-left:3px solid var(--rose);}
+.oc.done{border-left-color:var(--sage);}.oc.off{border-left-color:var(--border);opacity:0.5;}
+.oc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;}
+.oc-meta{font-size:9px;color:var(--muted);}
+.oc-bdg{font-size:8px;font-weight:500;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;}
+.oc-bdg.new{background:var(--blush);color:var(--rose);}.oc-bdg.done{background:#E8F5E9;color:var(--sage);}.oc-bdg.off{background:#f5f5f5;color:#bbb;}
+.oc-name{font-family:"Cormorant Garamond",serif;font-size:15px;font-weight:400;color:var(--dark);margin-bottom:2px;}
+.oc-items{font-size:10px;font-weight:300;color:var(--muted);margin-bottom:7px;line-height:1.5;}
+.oc-bot{display:flex;justify-content:space-between;align-items:center;}
+.oc-tot{font-family:"Cormorant Garamond",serif;font-size:17px;font-weight:400;color:var(--dark);}
+.oc-addr{font-size:9px;color:var(--muted);}
+.oc-acts{display:flex;gap:5px;}
+.act{font-size:9px;font-weight:500;padding:4px 10px;border-radius:2px;border:none;cursor:pointer;font-family:"Jost",sans-serif;}
+.act-done{background:#E8F5E9;color:var(--sage);}.act-off{background:#f5f5f5;color:#bbb;}
+.empty{text-align:center;padding:44px 20px;color:var(--muted);}
+.empty-i{font-size:32px;margin-bottom:10px;opacity:0.35;}
+.empty-t{font-family:"Cormorant Garamond",serif;font-size:17px;font-weight:300;font-style:italic;color:var(--dark);margin-bottom:4px;}
+footer{background:var(--dark);padding:22px 16px;text-align:center;margin-top:14px;}
+footer p{color:rgba(255,255,255,0.3);font-size:10px;line-height:2;}
+footer a{color:var(--gold);text-decoration:none;}
+.f-logo{font-family:"Cormorant Garamond",serif;font-size:17px;font-style:italic;color:var(--gold);display:block;margin-bottom:7px;letter-spacing:2px;}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-logo">La Fleur</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="tab-shop" onclick="showPg('shop',this)">Бутик</button>
+    <button class="nav-tab" id="tab-rep" onclick="showPg('reports',this)">Отчёты</button>
+  </div>
+  <a href="tel:+995579145634" class="nav-phone">+995 579 145 634</a>
+</nav>
+
+<div id="page-shop" class="page active">
+<div class="hero">
+  <div style="position:relative">
+    <div class="hero-tag">Цветочный бутик · Ахалкалаки</div>
+    <h1>Подарите <em>нежность</em><br>тем, кто дорог</h1>
+    <p class="hero-sub">Свежие букеты · авторские композиции<br>Доставка в течение 1–2 часов</p>
+    <div class="hero-stats">
+      <div><div class="hst-n">1–2ч</div><div class="hst-l">Доставка</div></div>
+      <div><div class="hst-n">4.9★</div><div class="hst-l">Рейтинг</div></div>
+      <div><div class="hst-n">100+</div><div class="hst-l">Букетов</div></div>
+    </div>
+  </div>
+</div>
+<div class="cart-bar">
+  <div class="cart-info">
+    <div class="cart-lbl" id="cLbl">Выберите букет</div>
+    <div class="cart-sum">Итого: <em id="cSum">0</em> лари</div>
+  </div>
+  <div class="cart-btns">
+    <button class="btn-clr" id="bClr" style="display:none" onclick="clrCart()">✕</button>
+    <button class="btn-ord" id="bOrd" style="display:none" onclick="goOrd()">Заказать →</button>
+  </div>
+</div>
+<div class="promo">
+  <div class="promo-i">🎀 Открытка бесплатно к любому букету</div>
+  <div class="promo-i">🚗 Доставка бесплатна от 150 лари</div>
+  <div class="promo-i">💝 Комбо — экономия до 20 лари</div>
+  <div class="promo-i">⚡ Срочная доставка за 1 час</div>
+</div>
+<div class="cats">
+  <button class="cat-btn active" onclick="toTop()">Всё</button>
+  <button class="cat-btn" onclick="go('s-combo')">Комбо</button>
+  <button class="cat-btn" onclick="go('s-roses')">Розы</button>
+  <button class="cat-btn" onclick="go('s-pions')">Пионы</button>
+  <button class="cat-btn" onclick="go('s-mix')">Миксы</button>
+  <button class="cat-btn" onclick="go('s-box')">Коробки</button>
+  <button class="cat-btn" onclick="go('s-extra')">Допы</button>
+</div>
+<div class="wrap">
+
+<div id="s-combo">
+<div class="sec-ttl">Комбо-наборы <span class="sec-bdg">Выгода до 20₾</span></div>
+<div class="combo">
+  <div class="combo-save">−20 лари</div>
+  <div class="combo-ttl">«Романтика»</div>
+  <div class="combo-desc">25 красных роз Эквадор · Рафаэлло 200г · Открытка с вашим текстом</div>
+  <div class="combo-tags"><div class="ctag">🌹 25 роз</div><div class="ctag">🍫 Рафаэлло</div><div class="ctag">💌 Открытка</div></div>
+  <div class="combo-bot"><div><div class="combo-old">200 лари</div><div class="combo-new">180 ₾</div></div><button class="combo-btn" onclick="addD('cmb1',180,'Комбо Романтика — 25 роз + Рафаэлло + открытка')">Добавить</button></div>
+</div>
+<div class="combo" style="margin-top:8px;background:linear-gradient(160deg,#1A2E1A,#2D4A2B);">
+  <div class="combo-save">−15 лари</div>
+  <div class="combo-ttl">«Нежность»</div>
+  <div class="combo-desc">15 розовых пионов · Merci 250г · Шарик-сердце фольгированный</div>
+  <div class="combo-tags"><div class="ctag">🌸 15 пионов</div><div class="ctag">🍬 Merci</div><div class="ctag">❤️ Шарик</div></div>
+  <div class="combo-bot"><div><div class="combo-old">185 лари</div><div class="combo-new">170 ₾</div></div><button class="combo-btn" style="background:var(--sage)" onclick="addD('cmb2',170,'Комбо Нежность — 15 пионов + Merci + шарик')">Добавить</button></div>
+</div>
+</div>
+
+<div id="s-roses"><div class="sec-ttl">Розы</div>
+<div class="products">
+  <div class="prod"><div class="prod-rb ">Хит</div><div class="prod-img">🌹</div><div class="prod-body"><div class="prod-name">«Море любви»</div><div class="prod-desc">15 красных роз, гипсофила, атласная лента</div><div class="prod-bot"><div class="prod-pr"><em>120</em> ₾</div><div id="cr-r1" class="add-btn" onclick="ups('r1',120,'«Море любви»')">+</div></div></div></div>
+  <div class="prod"><div class="prod-rb gold">−20₾</div><div class="prod-img">🌹</div><div class="prod-body"><div class="prod-name">«Страсть»</div><div class="prod-desc">25 роз Эквадор, крафт</div><div class="prod-bot"><div><div class="prod-old">180 ₾</div><div class="prod-pr"><em>160</em> ₾</div></div><div id="cr-r2" class="add-btn" onclick="ups('r2',160,'«Страсть»')">+</div></div></div></div>
+  <div class="prod"><div class="prod-rb sage">Новинка</div><div class="prod-img">🌸</div><div class="prod-body"><div class="prod-name">«Розовый рай»</div><div class="prod-desc">21 розовая роза, эвкалипт, лента</div><div class="prod-bot"><div class="prod-pr"><em>140</em> ₾</div><div id="cr-r3" class="add-btn" onclick="ups('r3',140,'«Розовый рай»')">+</div></div></div></div>
+  <div class="prod"><div class="prod-img">🥀</div><div class="prod-body"><div class="prod-name">«51 роза»</div><div class="prod-desc">51 красная роза, монобукет</div><div class="prod-bot"><div class="prod-pr"><em>320</em> ₾</div><div id="cr-r4" class="add-btn" onclick="ups('r4',320,'«51 роза»')">+</div></div></div></div>
+  <div class="prod"><div class="prod-img">🌼</div><div class="prod-body"><div class="prod-name">«Солнце»</div><div class="prod-desc">15 жёлтых роз, зелень</div><div class="prod-bot"><div class="prod-pr"><em>110</em> ₾</div><div id="cr-r5" class="add-btn" onclick="ups('r5',110,'«Солнце»')">+</div></div></div></div>
+  <div class="prod"><div class="prod-img">🤍</div><div class="prod-body"><div class="prod-name">«Невеста»</div><div class="prod-desc">21 белая роза, гипсофила</div><div class="prod-bot"><div class="prod-pr"><em>145</em> ₾</div><div id="cr-r6" class="add-btn" onclick="ups('r6',145,'«Невеста»')">+</div></div></div></div>
+</div></div>
+
+<div id="s-pions"><div class="sec-ttl">Пионы</div>
+<div class="products">
+  <div class="prod"><div class="prod-rb ">Хит</div><div class="prod-img">🌺</div><div class="prod-body"><div class="prod-name">«Бабл Роуз»</div><div class="prod-desc">17 пионовидных роз, нежно-розовые</div><div class="prod-bot"><div class="prod-pr"><em>150</em> ₾</div><div id="cr-p1" class="add-btn" onclick="ups('p1',150,'«Бабл Роуз»')">+</div></div></div></div>
+  <div class="prod"><div class="prod-img">💜</div><div class="prod-body"><div class="prod-name">«Лиловый сон»</div><div class="prod-desc">15 пионов лиловых, фисташка</div><div class="prod-bot"><div class="prod-pr"><em>165</em> ₾</div><div id="cr-p2" class="add-btn" onclick="ups('p2',165,'«Лиловый сон»')">+</div></div></div></div>
+  <div class="prod"><div class="prod-img">🌸</div><div class="prod-body"><div class="prod-name">«Мисти Баблс»</div><div class="prod-desc">21 кустовая пионовидная роза</div><div class="prod-bot"><div class="prod-pr"><em>180</em> ₾</div><div id="cr-p3" class="add-btn" onclick="ups('p3',180,'«Мисти Баблс»')">+</div></div></div></div>
+  <div class="prod"><div class="prod-rb gold">−30₾</div><div class="prod-img">🌷</div><div class="prod-body"><div class="prod-name">«Весна»</div><div class="prod-desc">25 пионов микс, сезон</div><div class="prod-bot"><div><div class="prod-old">230 ₾</div><div class="prod-pr"><em>200</em> ₾</div></div><div id="cr-p4" class="add-btn" onclick="ups('p4',200,'«Весна»')">+</div></div></div></div>
+</div></div>
+
+<div id="s-mix"><div class="sec-ttl">Авторские миксы</div>
+<div class="products">
+  <div class="prod"><div class="prod-rb sage">Автор</div><div class="prod-img">💐</div><div class="prod-body"><div class="prod-name">«Мия»</div><div class="prod-desc">Розы, эустома, гербера, зелень</div><div class="prod-bot"><div class="prod-pr"><em>155</em> ₾</div><div id="cr-m1" class="add-btn" onclick="ups('m1',155,'«Мия»')">+</div></div></div></div>
+  <div class="prod"><div class="prod-rb ">Хит</div><div class="prod-img">🌷</div><div class="prod-body"><div class="prod-name">«Джульетта»</div><div class="prod-desc">Пионы, розы, лизиантус, эвкалипт</div><div class="prod-bot"><div class="prod-pr"><em>190</em> ₾</div><div id="cr-m2" class="add-btn" onclick="ups('m2',190,'«Джульетта»')">+</div></div></div></div>
+  <div class="prod"><div class="prod-img">🌻</div><div class="prod-body"><div class="prod-name">«Прованс»</div><div class="prod-desc">Подсолнухи, хризантемы, лаванда</div><div class="prod-bot"><div class="prod-pr"><em>130</em> ₾</div><div id="cr-m3" class="add-btn" onclick="ups('m3',130,'«Прованс»')">+</div></div></div></div>
+  <div class="prod"><div class="prod-rb sage">Новинка</div><div class="prod-img">🌸</div><div class="prod-body"><div class="prod-name">«Акварель»</div><div class="prod-desc">Пастельные оттенки, 15 стеблей</div><div class="prod-bot"><div class="prod-pr"><em>145</em> ₾</div><div id="cr-m4" class="add-btn" onclick="ups('m4',145,'«Акварель»')">+</div></div></div></div>
+</div></div>
+
+<div id="s-box"><div class="sec-ttl">Цветы в коробках</div>
+<div class="products">
+  <div class="prod"><div class="prod-rb ">Хит</div><div class="prod-img">🎁</div><div class="prod-body"><div class="prod-name">«5 Историй»</div><div class="prod-desc">Пять сортов роз в шляпной коробке</div><div class="prod-bot"><div class="prod-pr"><em>180</em> ₾</div><div id="cr-b1" class="add-btn" onclick="ups('b1',180,'«5 Историй»')">+</div></div></div></div>
+  <div class="prod"><div class="prod-img">🎀</div><div class="prod-body"><div class="prod-name">«Красные в белой»</div><div class="prod-desc">Красные розы в белой коробке</div><div class="prod-bot"><div class="prod-pr"><em>160</em> ₾</div><div id="cr-b2" class="add-btn" onclick="ups('b2',160,'«Красные в белой»')">+</div></div></div></div>
+  <div class="prod"><div class="prod-img">💝</div><div class="prod-body"><div class="prod-name">«Сердце»</div><div class="prod-desc">Розы в коробке-сердечке, 25 бутонов</div><div class="prod-bot"><div class="prod-pr"><em>170</em> ₾</div><div id="cr-b3" class="add-btn" onclick="ups('b3',170,'«Сердце»')">+</div></div></div></div>
+  <div class="prod"><div class="prod-img">🧵</div><div class="prod-body"><div class="prod-name">«Корзина XL»</div><div class="prod-desc">Пионы и розы, корзина, XL</div><div class="prod-bot"><div class="prod-pr"><em>250</em> ₾</div><div id="cr-b4" class="add-btn" onclick="ups('b4',250,'«Корзина XL»')">+</div></div></div></div>
+</div></div>
+
+<div id="s-extra"><div class="sec-ttl">Дополнения</div>
+<div class="products">
+  <div class="prod"><div class="prod-img">🍫</div><div class="prod-body"><div class="prod-name">Рафаэлло 200г</div><div class="prod-desc">Классика к букету</div><div class="prod-bot"><div class="prod-pr"><em>25</em> ₾</div><div id="cr-e1" class="add-btn" onclick="addD('e1',25,'Рафаэлло 200г')">+</div></div></div></div>
+  <div class="prod"><div class="prod-img">🍬</div><div class="prod-body"><div class="prod-name">Merci 250г</div><div class="prod-desc">Шоколадный набор</div><div class="prod-bot"><div class="prod-pr"><em>22</em> ₾</div><div id="cr-e2" class="add-btn" onclick="addD('e2',22,'Merci 250г')">+</div></div></div></div>
+  <div class="prod"><div class="prod-img">🎈</div><div class="prod-body"><div class="prod-name">Шарик-сердце</div><div class="prod-desc">Фольгированный</div><div class="prod-bot"><div class="prod-pr"><em>12</em> ₾</div><div id="cr-e3" class="add-btn" onclick="addD('e3',12,'Шарик-сердце')">+</div></div></div></div>
+  <div class="prod"><div class="prod-img">💌</div><div class="prod-body"><div class="prod-name">Открытка</div><div class="prod-desc">С вашим текстом</div><div class="prod-bot"><div class="prod-free">Бесплатно</div><div id="cr-e4" class="add-btn" onclick="addD('e4',0,'Открытка')">+</div></div></div></div>
+  <div class="prod"><div class="prod-img">🍾</div><div class="prod-body"><div class="prod-name">Шампанское</div><div class="prod-desc">Brut 0.75л</div><div class="prod-bot"><div class="prod-pr"><em>45</em> ₾</div><div id="cr-e5" class="add-btn" onclick="addD('e5',45,'Шампанское')">+</div></div></div></div>
+  <div class="prod"><div class="prod-img">🧸</div><div class="prod-body"><div class="prod-name">Мишка</div><div class="prod-desc">Плюшевый 30 см</div><div class="prod-bot"><div class="prod-pr"><em>35</em> ₾</div><div id="cr-e6" class="add-btn" onclick="addD('e6',35,'Мишка')">+</div></div></div></div>
+</div></div>
+
+<div class="ord-sec" id="ordSec">
+  <div class="ord-ttl">Оформление заказа</div>
+  <div class="field"><label class="field-lbl">Ваше имя *</label><input class="field-inp" id="fN" type="text" placeholder="Как вас зовут?"></div>
+  <div class="field"><label class="field-lbl">Телефон *</label><input class="field-inp" id="fP" type="tel" placeholder="+995 5XX XXX XXX"></div>
+  <div class="field">
+    <label class="field-lbl">Способ получения *</label>
+    <div class="del-opts">
+      <div class="del-opt sel" id="dd" onclick="selD('d')"><div class="del-icon">🚗</div><div class="del-name">Доставка</div><div class="del-price">от 15 лари</div></div>
+      <div class="del-opt" id="dp" onclick="selD('p')"><div class="del-icon">🎪</div><div class="del-name">Самовывоз</div><div class="del-price">бесплатно</div></div>
+    </div>
+  </div>
+  <div id="af" class="field"><label class="field-lbl">Адрес доставки *</label><input class="field-inp" id="fA" type="text" placeholder="Улица, дом, квартира"></div>
+  <div class="field">
+    <label class="field-lbl">Время доставки *</label>
+    <div class="slot-wrap"><div class="slot-lbl">Доступные слоты на сегодня</div><div class="slots" id="slots"></div></div>
+  </div>
+  <div class="field"><label class="field-lbl">Текст открытки</label><textarea class="note-inp" id="fC" placeholder="Что написать на открытке?"></textarea></div>
+  <div class="field"><label class="field-lbl">Комментарий</label><input class="field-inp" id="fNt" placeholder="Цвет ленты, особые пожелания..."></div>
+</div>
+<div id="errM" class="err">Заполните имя, телефон, адрес и выберите время</div>
+<div class="total-wrap">
+  <div class="total-rows" id="tRows"></div>
+  <div class="ornament">— ✶ —</div>
+  <div class="total-fin"><div class="tf-l">К оплате</div><div class="tf-r"><span id="tNum">0</span> ₾</div></div>
+  <button class="btn-wa" onclick="sendOrd()">🌹 Заказать через WhatsApp</button>
+  <a href="tel:+995579145634" class="btn-call">Позвонить: +995 579 145 634</a>
+</div>
+</div>
+
+<div class="pop-ov" id="pop" onclick="if(event.target===this)closeP()">
+  <div class="pop">
+    <div class="pop-line"></div>
+    <div class="pop-ttl" id="pT">Добавить к букету?</div>
+    <div class="pop-sub">Часто дарят вместе</div>
+    <div class="pop-grid" id="pG"></div>
+    <div class="pop-tot"><div style="font-size:10px;color:var(--muted)">Добавляете на:</div><div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--rose)"><span id="pS">0</span> лари</div></div>
+    <div class="pop-btns"><button class="pop-skip" onclick="closeP()">Без допов</button><button class="pop-add" onclick="confP()">Добавить 🌸</button></div>
+  </div>
+</div>
+
+<footer><span class="f-logo">La Fleur</span><p>Цветочный бутик · Ахалкалаки, Грузия<br><a href="tel:+995579145634">+995 579 145 634</a> &nbsp;·&nbsp; Instagram: <a href="#">@lafleur</a><br>8:00 – 22:00 ежедневно</p></footer>
+</div>
+
+<div id="page-reports" class="page">
+  <div class="lock-sc" id="lkSc">
+    <div class="lock-ico">🔐</div>
+    <div class="lock-ttl">Раздел для персонала</div>
+    <div class="lock-sub">Введите код доступа</div>
+    <input class="lock-inp" id="lkIn" type="password" maxlength="4" placeholder="····" onkeydown="if(event.key==='Enter')chkCode()">
+    <button class="lock-btn" onclick="chkCode()">Войти</button>
+    <div class="lock-err" id="lkErr">Неверный код. Попробуйте снова.</div>
+  </div>
+  <div id="repC" style="display:none">
+  <div class="rep-wrap">
+    <div class="rep-hd">
+      <h2>Отчёты по заказам</h2>
+      <div class="rep-fs">
+        <button class="f-btn active" onclick="flt('today',this)">Сегодня</button>
+        <button class="f-btn" onclick="flt('week',this)">Неделя</button>
+        <button class="f-btn" onclick="flt('month',this)">Месяц</button>
+        <button class="f-btn" onclick="flt('all',this)">Все</button>
+      </div>
+    </div>
+    <div class="rep-stats">
+      <div class="sc"><div class="sc-n" id="sO">0</div><div class="sc-l">Заказов</div></div>
+      <div class="sc"><div class="sc-n" id="sR">0₾</div><div class="sc-l">Выручка</div></div>
+      <div class="sc"><div class="sc-n" id="sA">0₾</div><div class="sc-l">Ср. чек</div></div>
+    </div>
+    <div class="rep-top"><div class="rep-tl">Список заказов</div><button class="clr-btn" onclick="clrOrds()">Очистить</button></div>
+    <div class="ord-list" id="oList"></div>
+  </div>
+  </div>
+</div>
+
+<script>
+var UM={
+  r1:[{id:"uc",i:"🍫",n:"Рафаэлло",p:25},{id:"uk",i:"💌",n:"Открытка",p:0},{id:"ub",i:"🎈",n:"Шарик",p:12},{id:"us",i:"🍾",n:"Шампанское",p:45}],
+  r2:[{id:"uc",i:"🍫",n:"Рафаэлло",p:25},{id:"um",i:"🍬",n:"Merci",p:22},{id:"ubr",i:"🧸",n:"Мишка",p:35},{id:"ub",i:"🎈",n:"Шарик",p:12}],
+  r3:[{id:"uk",i:"💌",n:"Открытка",p:0},{id:"um",i:"🍬",n:"Merci",p:22},{id:"ub",i:"🎈",n:"Шарик",p:12},{id:"us",i:"🍾",n:"Шампанское",p:45}],
+  r4:[{id:"us",i:"🍾",n:"Шампанское",p:45},{id:"uc",i:"🍫",n:"Рафаэлло",p:25},{id:"ubr",i:"🧸",n:"Мишка",p:35},{id:"uk",i:"💌",n:"Открытка",p:0}],
+  r5:[{id:"uk",i:"💌",n:"Открытка",p:0},{id:"um",i:"🍬",n:"Merci",p:22},{id:"ub",i:"🎈",n:"Шарик",p:12},{id:"uc",i:"🍫",n:"Рафаэлло",p:25}],
+  r6:[{id:"us",i:"🍾",n:"Шампанское",p:45},{id:"uk",i:"💌",n:"Открытка",p:0},{id:"uc",i:"🍫",n:"Рафаэлло",p:25},{id:"ubr",i:"🧸",n:"Мишка",p:35}],
+  p1:[{id:"uc",i:"🍫",n:"Рафаэлло",p:25},{id:"uk",i:"💌",n:"Открытка",p:0},{id:"ub",i:"🎈",n:"Шарик",p:12},{id:"um",i:"🍬",n:"Merci",p:22}],
+  p2:[{id:"um",i:"🍬",n:"Merci",p:22},{id:"us",i:"🍾",n:"Шампанское",p:45},{id:"uk",i:"💌",n:"Открытка",p:0},{id:"ubr",i:"🧸",n:"Мишка",p:35}],
+  p3:[{id:"uc",i:"🍫",n:"Рафаэлло",p:25},{id:"uk",i:"💌",n:"Открытка",p:0},{id:"ub",i:"🎈",n:"Шарик",p:12},{id:"us",i:"🍾",n:"Шампанское",p:45}],
+  p4:[{id:"us",i:"🍾",n:"Шампанское",p:45},{id:"uc",i:"🍫",n:"Рафаэлло",p:25},{id:"ubr",i:"🧸",n:"Мишка",p:35},{id:"uk",i:"💌",n:"Открытка",p:0}],
+  m1:[{id:"uc",i:"🍫",n:"Рафаэлло",p:25},{id:"uk",i:"💌",n:"Открытка",p:0},{id:"ub",i:"🎈",n:"Шарик",p:12},{id:"um",i:"🍬",n:"Merci",p:22}],
+  m2:[{id:"us",i:"🍾",n:"Шампанское",p:45},{id:"uc",i:"🍫",n:"Рафаэлло",p:25},{id:"uk",i:"💌",n:"Открытка",p:0},{id:"ubr",i:"🧸",n:"Мишка",p:35}],
+  m3:[{id:"um",i:"🍬",n:"Merci",p:22},{id:"uk",i:"💌",n:"Открытка",p:0},{id:"ub",i:"🎈",n:"Шарик",p:12},{id:"uc",i:"🍫",n:"Рафаэлло",p:25}],
+  m4:[{id:"uk",i:"💌",n:"Открытка",p:0},{id:"uc",i:"🍫",n:"Рафаэлло",p:25},{id:"ub",i:"🎈",n:"Шарик",p:12},{id:"um",i:"🍬",n:"Merci",p:22}],
+  b1:[{id:"us",i:"🍾",n:"Шампанское",p:45},{id:"ubr",i:"🧸",n:"Мишка",p:35},{id:"uc",i:"🍫",n:"Рафаэлло",p:25},{id:"uk",i:"💌",n:"Открытка",p:0}],
+  b2:[{id:"us",i:"🍾",n:"Шампанское",p:45},{id:"uc",i:"🍫",n:"Рафаэлло",p:25},{id:"ubr",i:"🧸",n:"Мишка",p:35},{id:"uk",i:"💌",n:"Открытка",p:0}],
+  b3:[{id:"us",i:"🍾",n:"Шампанское",p:45},{id:"ubr",i:"🧸",n:"Мишка",p:35},{id:"um",i:"🍬",n:"Merci",p:22},{id:"uk",i:"💌",n:"Открытка",p:0}],
+  b4:[{id:"us",i:"🍾",n:"Шампанское",p:45},{id:"uc",i:"🍫",n:"Рафаэлло",p:25},{id:"uk",i:"💌",n:"Открытка",p:0},{id:"ubr",i:"🧸",n:"Мишка",p:35}]
+};
+var cart={},pnd=null,pSl={},dM="d",slt="",_f="today";
+function showPg(n,btn){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});document.getElementById("page-"+n).classList.add("active");document.querySelectorAll(".nav-tab").forEach(function(t){t.classList.remove("active");});btn.classList.add("active");if(n==="reports"){var u=sessionStorage.getItem("rf_ok");if(u==="1"){document.getElementById("lkSc").style.display="none";document.getElementById("repC").style.display="block";renderO(_f);}else{document.getElementById("lkSc").style.display="flex";document.getElementById("repC").style.display="none";}}}
+function chkCode(){var v=document.getElementById("lkIn").value;if(v==="2222"){sessionStorage.setItem("rf_ok","1");document.getElementById("lkSc").style.display="none";document.getElementById("repC").style.display="block";renderO(_f);}else{var e=document.getElementById("lkErr");e.classList.add("show");document.getElementById("lkIn").value="";setTimeout(function(){e.classList.remove("show");},2000);}}
+function initSlots(){var sl=["9:00-11:00","11:00-13:00","13:00-15:00","15:00-17:00","17:00-19:00","19:00-21:00"],now=new Date().getHours(),c=document.getElementById("slots");c.innerHTML="";sl.forEach(function(s){var h=parseInt(s),d=document.createElement("div");d.className="slot"+(h<=now?" off":"");d.textContent=s;if(h>now)d.onclick=function(){selSlt(d,s);};c.appendChild(d);});}
+function selSlt(el,s){document.querySelectorAll(".slot").forEach(function(x){x.classList.remove("sel");});el.classList.add("sel");slt=s;}
+function selD(m){dM=m;document.getElementById("dd").classList.toggle("sel",m==="d");document.getElementById("dp").classList.toggle("sel",m==="p");document.getElementById("af").style.display=m==="d"?"block":"none";updCart();}
+function ups(id,pr,nm){pnd={id:id,price:pr,name:nm};pSl={};var its=UM[id]||[],g=document.getElementById("pG");document.getElementById("pT").textContent="К «"+nm.split(" ").slice(0,2).join(" ")+"»?";g.innerHTML="";its.forEach(function(it){var d=document.createElement("div");d.className="pop-item";d.id="pi-"+it.id;d.innerHTML="<div class='pop-icon'>"+it.i+"</div><div class='pop-name'>"+it.n+"</div><div class='pop-price'>"+(it.p===0?"Бесплатно":"+"+it.p+" ₾")+"</div>";d.onclick=function(){togP(it);};g.appendChild(d);});document.getElementById("pS").textContent="0";document.getElementById("pop").classList.add("show");}
+function togP(it){var el=document.getElementById("pi-"+it.id);if(pSl[it.id]){delete pSl[it.id];el.classList.remove("sel");}else{pSl[it.id]=it;el.classList.add("sel");}var s=0;Object.values(pSl).forEach(function(i){s+=i.p;});document.getElementById("pS").textContent=s;}
+function closeP(){if(pnd)atc(pnd.id,pnd.price,pnd.name);pnd=null;pSl={};document.getElementById("pop").classList.remove("show");}
+function confP(){if(pnd)atc(pnd.id,pnd.price,pnd.name);Object.values(pSl).forEach(function(it){atc(it.id+"-x",it.p,it.n);});pnd=null;pSl={};document.getElementById("pop").classList.remove("show");}
+function addD(id,p,n){atc(id,p,n);}
+function atc(id,p,n){if(cart[id])cart[id].qty++;else cart[id]={name:n,price:p,qty:1};updCtrl(id);updCart();}
+function updCtrl(id){var el=document.getElementById("cr-"+id);if(!el||!cart[id])return;el.outerHTML="<div class='qty-ctrl' id='cr-"+id+"'><button class='qty-btn qty-m' onclick='chg(""+id+"",-1)'>-</button><div class='qty-n' id='qn-"+id+"'>"+cart[id].qty+"</div><button class='qty-btn qty-p' onclick='chg(""+id+"",1)'>+</button></div>";}
+function chg(id,d){if(!cart[id])return;cart[id].qty=Math.max(0,cart[id].qty+d);if(cart[id].qty===0){delete cart[id];var el=document.getElementById("cr-"+id);if(el)el.outerHTML="<div class='add-btn' id='cr-"+id+"' onclick='addD(""+id+"",0,"")'>+</div>";}else{var n=document.getElementById("qn-"+id);if(n)n.textContent=cart[id].qty;}updCart();}
+function updCart(){var keys=Object.keys(cart),tot=0,cnt=0;keys.forEach(function(k){tot+=cart[k].price*cart[k].qty;cnt+=cart[k].qty;});document.getElementById("cSum").textContent=tot;document.getElementById("tNum").textContent=tot;document.getElementById("cLbl").textContent=cnt>0?cnt+" товар(а) в корзине":"Выберите букет";document.getElementById("bClr").style.display=cnt>0?"block":"none";document.getElementById("bOrd").style.display=cnt>0?"block":"none";var rows="";keys.forEach(function(k){rows+="<div class='total-row'><div class='trl'>"+cart[k].name+(cart[k].qty>1?" x"+cart[k].qty:"")+"</div><div class='trr'>"+(cart[k].price===0?"Бесплатно":(cart[k].price*cart[k].qty)+" ₾")+"</div></div>";});if(dM==="d"&&tot>0&&tot<150)rows+="<div class='total-row'><div class='trl'>Доставка</div><div class='trr'>15 ₾</div></div>";else if(dM==="d"&&tot>=150)rows+="<div class='total-row'><div class='trl'>Доставка</div><div class='trr' style='color:var(--sage)'>Бесплатно</div></div>";document.getElementById("tRows").innerHTML=rows;}
+function clrCart(){cart={};document.querySelectorAll(".qty-ctrl").forEach(function(el){var id=el.id.replace("cr-","");el.outerHTML="<div class='add-btn' id='cr-"+id+"'>+</div>";});updCart();}
+function goOrd(){document.getElementById("ordSec").scrollIntoView({behavior:"smooth"});}
+function toTop(){window.scrollTo(0,0);}
+function go(id){document.getElementById(id).scrollIntoView({behavior:"smooth"});}
+function sendOrd(){var nm=document.getElementById("fN").value.trim(),ph=document.getElementById("fP").value.trim(),ad=dM==="d"?document.getElementById("fA").value.trim():"Самовывоз",cd=document.getElementById("fC").value.trim(),nt=document.getElementById("fNt").value.trim(),err=document.getElementById("errM");if(!nm||!ph||(dM==="d"&&!ad)||!slt){err.style.display="block";document.getElementById("fN").scrollIntoView({behavior:"smooth"});return;}err.style.display="none";var keys=Object.keys(cart);if(!keys.length){alert("Добавьте букет");return;}var sub=0;keys.forEach(function(k){sub+=cart[k].price*cart[k].qty;});var del=dM==="d"&&sub<150?15:0,tot=sub+del;var msg="🌹 *ЗАКАЗ La Fleur*
+
+👤 "+nm+"
+📞 "+ph+"
+📍 "+ad+"
+⏰ "+slt+"
+";if(cd)msg+="💌 "+cd+"
+";if(nt)msg+="💬 "+nt+"
+";msg+="
+*Состав:*
+";keys.forEach(function(k){msg+="• "+cart[k].name+(cart[k].qty>1?" x"+cart[k].qty:"")+(cart[k].price>0?" — "+(cart[k].price*cart[k].qty)+" ₾":" — Бесплатно")+"
+";});if(del>0)msg+="• Доставка — 15 ₾
+";msg+="
+💰 *Итого: "+tot+" ₾*";svOrd(nm,ph,ad,slt,keys,tot);window.open("https://wa.me/995579145634?text="+encodeURIComponent(msg),"_blank");}
+function svOrd(nm,ph,ad,sl,keys,tot){var ords=getOrds(),its=[];keys.forEach(function(k){its.push(cart[k].name+(cart[k].qty>1?" x"+cart[k].qty:""));});ords.push({id:"#"+Date.now().toString().slice(-6),date:new Date().toISOString(),name:nm,phone:ph,addr:ad,slot:sl,items:its,total:tot,status:"new"});try{localStorage.setItem("lf_ords",JSON.stringify(ords));}catch(e){}}
+function getOrds(){try{return JSON.parse(localStorage.getItem("lf_ords")||"[]");}catch(e){return[];}}
+function clrOrds(){if(!confirm("Удалить все заказы?"))return;try{localStorage.removeItem("lf_ords");}catch(e){}renderO(_f);}
+function updSt(id,st){var ords=getOrds();ords.forEach(function(o){if(o.id===id)o.status=st;});try{localStorage.setItem("lf_ords",JSON.stringify(ords));}catch(e){}renderO(_f);}
+function flt(p,btn){_f=p;document.querySelectorAll(".f-btn").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");renderO(p);}
+function renderO(p){var ords=getOrds(),now=new Date();ords=ords.filter(function(o){var d=new Date(o.date);if(p==="today")return d.toDateString()===now.toDateString();if(p==="week")return(now-d)<7*86400000;if(p==="month")return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();return true;});ords.sort(function(a,b){return new Date(b.date)-new Date(a.date);});var tot=ords.reduce(function(s,o){return s+o.total;},0),avg=ords.length?Math.round(tot/ords.length):0;document.getElementById("sO").textContent=ords.length;document.getElementById("sR").textContent=tot+"₾";document.getElementById("sA").textContent=avg+"₾";var list=document.getElementById("oList");if(!ords.length){list.innerHTML="<div class='empty'><div class='empty-i'>🌸</div><div class='empty-t'>Заказов пока нет</div></div>";return;}list.innerHTML=ords.map(function(o){var d=new Date(o.date),ts=d.toLocaleTimeString("ru",{hour:"2-digit",minute:"2-digit"}),ds=d.toLocaleDateString("ru",{day:"2-digit",month:"2-digit"}),sc=o.status==="delivered"?"done":o.status==="cancelled"?"off":"",sl=o.status==="delivered"?"Доставлено":o.status==="cancelled"?"Отменён":"Новый";return "<div class='oc "+sc+"'><div class='oc-top'><div class='oc-meta'>"+o.id+" · "+ds+" "+ts+" · "+o.slot+"</div><div class='oc-bdg "+(o.status||"new")+"'>"+sl+"</div></div><div class='oc-name'>"+o.name+" · "+o.phone+"</div><div class='oc-items'>"+o.items.join(", ")+"</div><div class='oc-bot'><div><div class='oc-tot'>"+o.total+" ₾</div><div class='oc-addr'>"+o.addr+"</div></div>"+(o.status==="new"?"<div class='oc-acts'><button class='act act-done' onclick='updSt(""+o.id+"","delivered")'>Доставлено</button><button class='act act-off' onclick='updSt(""+o.id+"","cancelled")'>Отмена</button></div>":"")+"</div></div>";}).join("");}
+initSlots();
+</script>
+</body>
+</html>
