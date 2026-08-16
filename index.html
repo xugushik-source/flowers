@@ -211,13 +211,13 @@ footer a{color:var(--gold);text-decoration:none;}
   <div class="promo-i">⚡ Срочная доставка за 1 час</div>
 </div>
 <div class="cats">
-  <button class="cat-btn active" onclick="toTop()">Всё</button>
-  <button class="cat-btn" onclick="go('s-combo')">Комбо</button>
-  <button class="cat-btn" onclick="go('s-roses')">Розы</button>
-  <button class="cat-btn" onclick="go('s-pions')">Пионы</button>
-  <button class="cat-btn" onclick="go('s-mix')">Миксы</button>
-  <button class="cat-btn" onclick="go('s-box')">Коробки</button>
-  <button class="cat-btn" onclick="go('s-extra')">Допы</button>
+  <button class="cat-btn active" onclick="showSec('all',this)">Всё</button>
+  <button class="cat-btn" onclick="showSec('s-combo',this)">Комбо</button>
+  <button class="cat-btn" onclick="showSec('s-roses',this)">Розы</button>
+  <button class="cat-btn" onclick="showSec('s-pions',this)">Пионы</button>
+  <button class="cat-btn" onclick="showSec('s-mix',this)">Миксы</button>
+  <button class="cat-btn" onclick="showSec('s-box',this)">Коробки</button>
+  <button class="cat-btn" onclick="showSec('s-extra',this)">Допы</button>
 </div>
 <div class="wrap">
 
@@ -395,6 +395,17 @@ function chg(id,d){if(!cart[id])return;cart[id].qty=Math.max(0,cart[id].qty+d);i
 function updCart(){var keys=Object.keys(cart),tot=0,cnt=0;keys.forEach(function(k){tot+=cart[k].price*cart[k].qty;cnt+=cart[k].qty;});document.getElementById("cSum").textContent=tot;document.getElementById("tNum").textContent=tot;document.getElementById("cLbl").textContent=cnt>0?cnt+" товар(а) в корзине":"Выберите букет";document.getElementById("bClr").style.display=cnt>0?"block":"none";document.getElementById("bOrd").style.display=cnt>0?"block":"none";var rows="";keys.forEach(function(k){rows+="<div class='total-row'><div class='trl'>"+cart[k].name+(cart[k].qty>1?" x"+cart[k].qty:"")+"</div><div class='trr'>"+(cart[k].price===0?"Бесплатно":(cart[k].price*cart[k].qty)+" ₾")+"</div></div>";});if(dM==="d"&&tot>0&&tot<150)rows+="<div class='total-row'><div class='trl'>Доставка</div><div class='trr'>15 ₾</div></div>";else if(dM==="d"&&tot>=150)rows+="<div class='total-row'><div class='trl'>Доставка</div><div class='trr' style='color:var(--sage)'>Бесплатно</div></div>";document.getElementById("tRows").innerHTML=rows;}
 function clrCart(){cart={};document.querySelectorAll(".qty-ctrl").forEach(function(el){var id=el.id.replace("cr-","");el.outerHTML="<div class='add-btn' id='cr-"+id+"'>+</div>";});updCart();}
 function goOrd(){document.getElementById("ordSec").scrollIntoView({behavior:"smooth"});}
+function showSec(id,btn){
+  var secs=["s-combo","s-roses","s-pions","s-mix","s-box","s-extra"];
+  document.querySelectorAll(".cat-btn").forEach(function(b){b.classList.remove("active");});
+  btn.classList.add("active");
+  if(id==="all"){
+    secs.forEach(function(s){var el=document.getElementById(s);if(el)el.style.display="block";});
+  } else {
+    secs.forEach(function(s){var el=document.getElementById(s);if(el)el.style.display=s===id?"block":"none";});
+  }
+  window.scrollTo(0,0);
+}
 function toTop(){window.scrollTo(0,0);}
 function go(id){document.getElementById(id).scrollIntoView({behavior:"smooth"});}
 function sendOrd(){var nm=document.getElementById("fN").value.trim(),ph=document.getElementById("fP").value.trim(),ad=dM==="d"?document.getElementById("fA").value.trim():"Самовывоз",cd=document.getElementById("fC").value.trim(),nt=document.getElementById("fNt").value.trim(),err=document.getElementById("errM");if(!nm||!ph||(dM==="d"&&!ad)||!slt){err.style.display="block";document.getElementById("fN").scrollIntoView({behavior:"smooth"});return;}err.style.display="none";var keys=Object.keys(cart);if(!keys.length){alert("Добавьте букет");return;}var sub=0;keys.forEach(function(k){sub+=cart[k].price*cart[k].qty;});var del=dM==="d"&&sub<150?15:0,tot=sub+del;var msg="🌹 *ЗАКАЗ La Fleur*
