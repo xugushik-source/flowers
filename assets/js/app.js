@@ -124,8 +124,9 @@
 
   function renderCollections() {
     var g = $('#colGrid');
-    var tiles = D.CATEGORIES.filter(function (c) { return catItems(c.id).length && c.tile; }).map(function (c) {
-      return { name: c.long || c.name, img: c.tile, n: catItems(c.id).length, go: function () { selectCategory(c.id, true); } };
+    var tiles = D.CATEGORIES.filter(function (c) { return c.tile; }).map(function (c) {
+      var n = catItems(c.id).length;
+      return { name: c.long || c.name, img: c.tile, n: n || T.soon, go: function () { selectCategory(c.id, true); } };
     });
     // the gift sets live in their own section further down
     tiles.splice(tiles.length - 1, 0, { name: 'Готовые подарки', img: 'cmb1', n: D.COMBOS.length, go: function () { scrollToId('gifts'); } });
@@ -183,7 +184,7 @@
 
   function renderCatbar() {
     var bar = $('#catbarScroll');
-    var cats = [{ id: 'all', name: T.allCats }].concat(D.CATEGORIES.filter(function (c) { return catItems(c.id).length; }));
+    var cats = [{ id: 'all', name: T.allCats }].concat(D.CATEGORIES);
     cats.forEach(function (c) {
       var b = el('button', 'cat', esc(c.name));
       b.type = 'button';
@@ -209,7 +210,13 @@
       g.innerHTML = '';
       var items = filtered();
       if (!items.length) {
-        var e = el('div', 'empty', '<p>' + T.emptyFilter + '</p>');
+        var emptyCat = filter.cat !== 'all' && !catItems(filter.cat).length;
+        var e = el('div', 'empty', '<p>' + (emptyCat ? T.emptyCategory : T.emptyFilter) + '</p>');
+        if (emptyCat) {
+          var wa = el('a', 'btn btn-primary', T.writeUs);
+          wa.href = 'https://wa.me/' + D.WHATSAPP; wa.target = '_blank'; wa.rel = 'noopener';
+          e.appendChild(wa);
+        }
         var b = el('button', 'btn btn-ghost', T.showAll); b.type = 'button';
         b.addEventListener('click', function () { filter.occ = null; selectCategory('all', false); });
         e.appendChild(b); g.appendChild(e);

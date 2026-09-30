@@ -14,16 +14,17 @@ window.LF_DATA = (function () {
   var DELIVERY = { fee: 15, freeFrom: 150 };
   var SLOTS = ['9:00-11:00', '11:00-13:00', '13:00-15:00', '15:00-17:00', '17:00-19:00', '19:00-21:00'];
 
-  /* Collections. Categories without products are hidden automatically,
-     so "mono" / "compositions" appear as soon as a product is assigned. */
+  /* Collections. Empty categories stay visible (marked "Скоро") so the
+     structure is complete; add products with that `category` to fill them.
+     Tiles for empty categories use temporary partner photos. */
   var CATEGORIES = [
     { id: 'roses',        name: 'Розы',            tile: 'r4' },
     { id: 'pions',        name: 'Пионы',           tile: 'p1' },
     { id: 'author',       name: 'Авторские',       tile: 'm2', long: 'Авторские букеты' },
-    { id: 'mono',         name: 'Монобукеты',      tile: null },
-    { id: 'compositions', name: 'Композиции',      tile: null },
+    { id: 'mono',         name: 'Монобукеты',      tile: 'tile-mono' },
+    { id: 'compositions', name: 'Композиции',      tile: 'tile-compositions' },
     { id: 'box',          name: 'Коробки',         tile: 'b1', long: 'Цветы в коробке' },
-    { id: 'gifts',        name: 'Подарки',         tile: 'e6' }
+    { id: 'gifts',        name: 'Подарки',         tile: 'tile-gifts' }
   ];
 
   /* Occasion tiles. The occasion tags on products below are an initial
@@ -130,6 +131,9 @@ window.LF_TEXT = {
   items: function (n) { var m10 = n % 10, m100 = n % 100; return n + ' ' + (m10 === 1 && m100 !== 11 ? 'товар' : (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) ? 'товара' : 'товаров'); },
   allCats: 'Все',
   occasionChip: 'Повод',
+  soon: 'Скоро',
+  emptyCategory: 'Коллекция готовится. Напишите нам в WhatsApp — соберём букет под ваш запрос.',
+  writeUs: 'Написать в WhatsApp',
   emptyFilter: 'Для этого сочетания пока нет букетов. Посмотрите всю коллекцию или напишите нам — соберём под ваш повод.',
   showAll: 'Показать все',
   cardAdd: 'Добавить открытку',
