@@ -7,6 +7,9 @@ single photo session:
   * bouquet cut out (rembg) and placed centred, ~76% of the frame height
   * the bouquet itself is never recoloured, redrawn or edited
 
+Scene photos (splash, editorial, occasion tiles) get the same cut-out
+treatment on a dark botanical backdrop, see SCENES.
+
 Usage:
     pip install pillow "rembg[cpu]"
     python3 scripts/process_images.py            # everything
@@ -162,22 +165,29 @@ def soft_edge(im):
     return im
 
 
-def backdrop(w, h):
+# Backdrops -----------------------------------------------------------------
+LIGHT = dict(top=TOP, bottom=BOTTOM, glow=(246, 240, 232), glow_a=38, shadow=(92, 78, 66), shadow_a=110)
+# dark botanical, in the site palette (#1E2A23 -> #11100E): splash, editorial, occasions
+DARK = dict(top=(34, 46, 39), bottom=(17, 16, 14), glow=(70, 88, 76), glow_a=70, shadow=(0, 0, 0), shadow_a=150)
+
+
+def backdrop(w, h, style=LIGHT, cx=.5):
     bg = Image.new("RGB", (w, h))
-    top, bot = TOP, BOTTOM
+    top, bot = style["top"], style["bottom"]
     for y in range(h):
         t = y / (h - 1)
         c = tuple(int(top[i] + (bot[i] - top[i]) * t) for i in range(3))
         bg.paste(c, (0, y, w, y + 1))
     # soft light behind the subject
     glow = Image.new("L", (w, h), 0)
-    ImageDraw.Draw(glow).ellipse((w * .1, h * .05, w * .9, h * .75), fill=38)
-    glow = glow.filter(ImageFilter.GaussianBlur(w * .12))
-    bg = Image.composite(Image.new("RGB", (w, h), (246, 240, 232)), bg, glow)
+    gw = min(w, h * .9)
+    ImageDraw.Draw(glow).ellipse((w * cx - gw * .45, h * .05, w * cx + gw * .45, h * .75), fill=style["glow_a"])
+    glow = glow.filter(ImageFilter.GaussianBlur(gw * .14))
+    bg = Image.composite(Image.new("RGB", (w, h), style["glow"]), bg, glow)
     return bg
 
 
-def compose(subject, w, h, fill_h=.76, fill_w=.84, base=.91):
+def compose(subject, w, h, fill_h=.76, fill_w=.84, base=.91, cx=.5, style=LIGHT):
     bbox = subject.getchannel("A").getbbox() or (0, 0) + subject.size
     subject = subject.crop(bbox)
     sw, sh = subject.size
@@ -188,14 +198,14 @@ def compose(subject, w, h, fill_h=.76, fill_w=.84, base=.91):
         rgb.putalpha(subject.getchannel("A"))
         subject = rgb
     sw, sh = subject.size
-    x, y = (w - sw) // 2, int(h * base) - sh
+    x, y = int(w * cx - sw / 2), int(h * base) - sh
 
-    bg = backdrop(w, h).convert("RGBA")
+    bg = backdrop(w, h, style, cx).convert("RGBA")
     # floor shadow
     sh_l = Image.new("L", (w, h), 0)
-    ImageDraw.Draw(sh_l).ellipse((x + sw * .12, y + sh - sh * .035, x + sw * .88, y + sh + sh * .045), fill=110)
-    sh_l = sh_l.filter(ImageFilter.GaussianBlur(w * .022))
-    bg = Image.composite(Image.new("RGBA", (w, h), (92, 78, 66, 255)), bg, sh_l)
+    ImageDraw.Draw(sh_l).ellipse((x + sw * .12, y + sh - sh * .035, x + sw * .88, y + sh + sh * .045), fill=style["shadow_a"])
+    sh_l = sh_l.filter(ImageFilter.GaussianBlur(max(w, h) * .018))
+    bg = Image.composite(Image.new("RGBA", (w, h), style["shadow"] + (255,)), bg, sh_l)
     bg.alpha_composite(subject, (x, y))
     return bg.convert("RGB")
 
@@ -223,43 +233,36 @@ def build(key):
     print("ok", key)
 
 
-def build_scenes():
-    """Splash, editorial and occasion photos keep their real environment."""
-    inc = lambda n: Image.open(P("incoming", n)).convert("RGB")
+# Scene photos: same cut-out treatment, dark botanical backdrop -------------
+# key -> (source, model, pre-crop, output path, size, layout)
+SCENES = {
+    "splash-m":  ("incoming/02.jpg", "isnet-general-use", None, ("hero", "splash-m"), (1110, 2400), dict(fill_h=.36, fill_w=.74, base=.52)),
+    "splash-d":  ("incoming/02.jpg", "isnet-general-use", None, ("hero", "splash-d"), (1920, 1080), dict(fill_h=.84, fill_w=.38, base=.95, cx=.77)),
+    "editorial": ("incoming/04.jpg", "isnet-general-use", (0, 0, 1206, 1180), ("hero", "editorial"), (1200, 1500), dict(fill_h=.78, fill_w=.86, base=.9)),
+    # occasions: 05 cropped so the partner watermark stays out of frame
+    "occ-birthday": ("incoming/01.jpg", "isnet-general-use", None, ("occasions", "birthday"), (900, 1125), dict(fill_h=.6, fill_w=.8, base=.72)),
+    "occ-her":      ("incoming/08.jpg", "isnet-general-use", None, ("occasions", "her"), (900, 1125), dict(fill_h=.62, fill_w=.8, base=.74)),
+    "occ-him":      ("incoming/07.jpg", "isnet-general-use", (0, 0, 1150, 1540), ("occasions", "him"), (900, 1125), dict(fill_h=.64, fill_w=.8, base=.74)),
+    "occ-love":     ("incoming/05.jpg", "isnet-general-use", (0, 200, 1206, 1125), ("occasions", "love"), (900, 1125), dict(fill_h=.6, fill_w=.84, base=.72)),
+    "occ-thanks":   ("incoming/06.jpg", "isnet-general-use", (0, 0, 1206, 1480), ("occasions", "thanks"), (900, 1125), dict(fill_h=.6, fill_w=.84, base=.72)),
+    "occ-noreason": ("incoming/03.jpg", "isnet-general-use", None, ("occasions", "noreason"), (900, 1125), dict(fill_h=.68, fill_w=.8, base=.76)),
+}
 
-    def crop_4x5(im):
-        w, h = im.size
-        if w / h > .8:
-            nw = int(h * .8)
-            return im.crop(((w - nw) // 2, 0, (w + nw) // 2, h))
-        nh = int(w * 1.25)
-        return im.crop((0, (h - nh) // 2, w, (h + nh) // 2))
 
-    def out(im, path, width=None, q=82):
-        if width and im.size[0] > width:
-            im = im.resize((width, int(im.size[1] * width / im.size[0])), Image.LANCZOS)
-        im.save(path + ".jpg", "JPEG", quality=q, optimize=True, progressive=True)
-        im.save(path + ".webp", "WEBP", quality=q - 4)
-
-    im = inc("02.jpg")
-    out(im.crop((0, 120, 1206, 1500)), P("assets", "hero", "splash-m"))
-    out(im.crop((0, 330, 1206, 1010)), P("assets", "hero", "splash-d"))
-    out(inc("04.jpg").crop((0, 150, 1206, 1500)), P("assets", "hero", "editorial"))
-    occ = {  # 05 is cropped so the partner watermark stays out of frame
-        "birthday": ("01.jpg", (0, 180, 1206, 1600)),
-        "her": ("08.jpg", (60, 120, 1160, 1391)),
-        "him": ("07.jpg", (0, 300, 1080, 1440)),
-        "love": ("05.jpg", (60, 0, 940, 1100)),
-        "thanks": ("06.jpg", (0, 330, 1206, 1480)),
-        "noreason": ("03.jpg", (0, 150, 1206, 1597)),
-    }
-    for k, (f, box) in occ.items():
-        out(crop_4x5(inc(f).crop(box)), P("assets", "occasions", k), width=900)
+def build_scene(key):
+    src, model, box, out, (w, h), layout = SCENES[key]
+    im = load_source(src, box)
+    # the cut-out is the same for every use of a photo, so share the cache
+    subject = cutout(src.replace("/", "_") + (("_%d_%d_%d_%d" % box) if box else ""), im, model)
+    subject.putalpha(keep_main(subject.getchannel("A")))
+    img = compose(subject, w, h, style=DARK, **layout)
+    path = P("assets", *out)
+    img.save(path + ".jpg", "JPEG", quality=84, optimize=True, progressive=True)
+    img.save(path + ".webp", "WEBP", quality=80)
+    print("ok", key)
 
 
 if __name__ == "__main__":
-    keys = sys.argv[1:] or list(SOURCES)
+    keys = sys.argv[1:] or list(SOURCES) + list(SCENES)
     for k in keys:
-        build(k)
-    if not sys.argv[1:]:
-        build_scenes()
+        build_scene(k) if k in SCENES else build(k)

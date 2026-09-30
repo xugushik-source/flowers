@@ -127,7 +127,7 @@ ol, ul { list-style: none; }
   color: var(--ivory);
 }
 .splash-bg, .splash-bg img { position: absolute; inset: 0; width: 100%; height: 100%; }
-.splash-bg img { object-fit: cover; object-position: 50% 35%; }
+.splash-bg img { object-fit: cover; object-position: 50% 30%; }
 .splash-shade {
   position: absolute; inset: 0;
   background:
@@ -152,7 +152,8 @@ ol, ul { list-style: none; }
 .splash-progress span { display: block; height: 100%; background: var(--champ); transform: scaleX(0); transform-origin: left; }
 
 @media (min-width: 768px) {
-  .splash-bg img { object-position: 50% 45%; }
+  .splash-bg img { object-position: 85% 50%; }
+  .splash-logo { font-size: clamp(64px, 8.4vw, 132px); }
   .splash-shade { background: linear-gradient(90deg, rgba(17,16,14,.88) 0%, rgba(17,16,14,.55) 45%, rgba(17,16,14,.1) 100%), linear-gradient(180deg, transparent 60%, rgba(17,16,14,.6)); }
   .splash { align-items: center; }
   .splash-inner { padding-bottom: 0; }
@@ -350,9 +351,10 @@ ol, ul { list-style: none; }
 .story { margin-top: var(--sec); background: var(--green); display: grid; grid-template-columns: 1fr; }
 .story-img { aspect-ratio: 4 / 5; overflow: hidden; background: #2A2622; }
 .story-img picture, .story-img img { width: 100%; height: 100%; }
-.story-img img { object-fit: cover; }
+.story-img img { object-fit: cover; object-position: 50% 72%; }
 .story-text { padding: 56px var(--gutter) 72px; }
 .story-text .h-xl { font-style: italic; font-size: clamp(40px, 10vw, 64px); }
+@media (min-width: 900px) { .story-text .h-xl { font-size: clamp(40px, 3.6vw, 60px); } }
 @media (min-width: 900px) {
   .story { grid-template-columns: 55fr 45fr; align-items: center; }
   .story-img { aspect-ratio: auto; height: min(92vh, 900px); }
