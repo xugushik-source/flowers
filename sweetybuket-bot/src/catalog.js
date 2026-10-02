@@ -7,6 +7,11 @@ export const products = [
 ['baskets-02065','Летняя корзина',79000],['baskets-75781','Весенняя корзина',99000],['baskets-31935','Корзина с жемчугом',149000],
 ['sweets-45389','Клубника в шоколаде',6900],['sweets-77254','Сладкое признание',8900],['sweets-34377','Ягодный микс',11900],
 ['combo-04823','Гортензии + клубника',24900],['combo-65036','Пионы + клубника',34900],['combo-72485','Эустома + клубника',29900]
-].map(([id,name,price])=>({id,name,price}));
+].map(([id,name,price])=>({
+  id,
+  name,
+  price,
+  category: id.split('-')[0]
+}));
 export const byId = Object.fromEntries(products.map(p=>[p.id,p]));
 export const money = n => new Intl.NumberFormat('ru-RU').format(n)+' ₽';
