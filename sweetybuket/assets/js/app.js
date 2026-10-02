@@ -613,15 +613,20 @@
     var text = buildMessage();
     track('order_prepared', { total: subtotal() + deliveryFee(), items: count(), payment: paymentMethod });
     var bot = 'Sweety_Buket_Bot';
-    var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent('https://xugushik-source.github.io/flowers/sweetybuket/') + '&text=' + encodeURIComponent(text);
-    var box = $('#coSend'), btns = $('#coSendBtns');
-    btns.innerHTML = '';
-    var a = el('a', 'btn btn-light', 'Отправить заказ в Telegram');
-    a.href = shareUrl; a.target = '_blank'; a.rel = 'noopener';
-    a.addEventListener('click', function () { track('order_channel', { channel: 'Telegram', payment: paymentMethod }); });
-    btns.appendChild(a);
-    box.hidden = false;
-    window.open(shareUrl, '_blank', 'noopener');
+    var main = cart.filter(function (l) { return l.type !== 'addon'; });
+    var first = main[0];
+    var start = first ? first.id : 'order';
+    var botUrl = 'https://t.me/' + bot + '?start=' + encodeURIComponent(start);
+    try {
+      sessionStorage.setItem('sb_pending_order', JSON.stringify({
+        text: text,
+        payment: paymentMethod,
+        product: first ? first.id : '',
+        total: subtotal() + deliveryFee()
+      }));
+    } catch (e) {}
+    track('order_channel', { channel: 'TelegramBot', payment: paymentMethod });
+    window.location.href = botUrl;
   });
 
   function copyText(text) {
