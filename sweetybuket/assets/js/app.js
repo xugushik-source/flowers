@@ -612,21 +612,12 @@
     err.hidden = true;
     var text = buildMessage();
     track('order_prepared', { total: subtotal() + deliveryFee(), items: count(), payment: paymentMethod });
-    var bot = 'Sweety_Buket_Bot';
-    var main = cart.filter(function (l) { return l.type !== 'addon'; });
-    var first = main[0];
-    var start = first ? first.id : 'order';
-    var botUrl = 'https://t.me/' + bot + '?start=' + encodeURIComponent(start);
-    try {
-      sessionStorage.setItem('sb_pending_order', JSON.stringify({
-        text: text,
-        payment: paymentMethod,
-        product: first ? first.id : '',
-        total: subtotal() + deliveryFee()
-      }));
-    } catch (e) {}
-    track('order_channel', { channel: 'TelegramBot', payment: paymentMethod });
-    window.location.href = botUrl;
+    /* The website checkout is already complete: send the prepared order to
+       the shop's Telegram contact, not back through the sales bot. */
+    var shopTelegram = '79165896600';
+    var sendUrl = 'https://t.me/share/url?url=' + encodeURIComponent('https://xugushik-source.github.io/flowers/sweetybuket/') + '&text=' + encodeURIComponent(text);
+    track('order_channel', { channel: 'TelegramOrder', payment: paymentMethod });
+    window.location.href = sendUrl;
   });
 
   function copyText(text) {
