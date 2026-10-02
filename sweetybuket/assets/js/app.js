@@ -29,6 +29,7 @@
     set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
   var CART_KEY = 'sb_cart_v1', FORM_KEY = 'sb_checkout_v2';
+  var paymentMethod = 'cash';
 
   /* ---------- lookups ---------- */
   var byId = {};
@@ -570,11 +571,27 @@
     m.push('', W.address + ':', co.mode === 'd' ? v('fAddr') : W.pickup);
     m.push('', W.time + ':', time);
     m.push('', W.comment + ':', v('fComment') || W.none);
+    m.push('', 'Оплата:', paymentMethod === 'cash' ? 'Наличными' : paymentMethod === 'card' ? 'Безналичная' : 'Перевод');
     if ($('#fSurprise').checked) m.push('', '🤫 ' + W.surprise);
     if (co.mode === 'd' && D.DELIVERY) m.push('', W.deliveryLine + ': ' + (deliveryFee() ? deliveryFee() + ' ' + T.currency : T.free));
     m.push('', W.total + ':', unknownPrice() ? W.totalAsk : sumText(subtotal() + deliveryFee()));
     return m.join('\n');
   }
+
+  $$('.pay-seg [data-pay]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      paymentMethod = b.getAttribute('data-pay');
+      $$('.pay-seg [data-pay]').forEach(function (x) {
+        var on = x === b; x.classList.toggle('is-on', on); x.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+      var hint = $('#payHint');
+      hint.textContent = paymentMethod === 'cash'
+        ? 'Оплата наличными при получении. Детали подтвердит менеджер.'
+        : paymentMethod === 'card'
+          ? 'Безналичная оплата. Платёжную ссылку подключим здесь после настройки.'
+          : 'Перевод. Реквизиты/платёжную ссылку подключим здесь после настройки.';
+    });
+  });
 
   $('#waBtn').addEventListener('click', function () {
     var err = $('#coErr');
@@ -586,38 +603,25 @@
     need.forEach(function (id) { document.getElementById(id).classList.toggle('is-invalid', bad.indexOf(id) > -1); });
     if (bad.length) {
       err.textContent = T.errRequired; err.hidden = false;
-      var f = document.getElementById(bad[0]);
-      f.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
-      setTimeout(function () { f.focus({ preventScroll: true }); }, 350);
+      var field = document.getElementById(bad[0]);
+      field.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
+      setTimeout(function () { field.focus({ preventScroll: true }); }, 350);
       return;
     }
-    if (!$('#fConsent').checked) {
-      err.textContent = T.errConsent; err.hidden = false;
-      $('#fConsent').focus();
-      return;
-    }
+    if (!$('#fConsent').checked) { err.textContent = T.errConsent; err.hidden = false; $('#fConsent').focus(); return; }
     err.hidden = true;
     var text = buildMessage();
-    track('order_prepared', { total: subtotal() + deliveryFee(), items: count() });
-    copyText(text);
-    // cart is intentionally kept: the message may not have been sent yet
+    track('order_prepared', { total: subtotal() + deliveryFee(), items: count(), payment: paymentMethod });
+    var bot = 'Sweety_Buket_Bot';
+    var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent('https://xugushik-source.github.io/flowers/sweetybuket/') + '&text=' + encodeURIComponent(text);
     var box = $('#coSend'), btns = $('#coSendBtns');
-    $('#coSendText').value = text;
     btns.innerHTML = '';
-    var C = D.CHANNELS || {};
-    var add = function (label, href, primary) {
-      var a = el('a', 'btn ' + (primary ? 'btn-light' : 'btn-ghost'), label);
-      a.href = href; if (/^https?:/.test(href)) { a.target = '_blank'; a.rel = 'noopener'; }
-      a.addEventListener('click', function () { copyText(text); track('order_channel', { channel: label }); });
-      btns.appendChild(a);
-    };
-    if (C.telegram) add('Открыть Telegram', 'https://t.me/+' + C.telegram, true);
-    if (C.max) add('Открыть MAX', C.max, !C.telegram);
-    if (C.whatsapp) add('Открыть WhatsApp', 'https://wa.me/' + C.whatsapp + '?text=' + encodeURIComponent(text), false);
-    (C.phones || []).forEach(function (ph) { add('Позвонить ' + ph, 'tel:' + ph.replace(/[^+\d]/g, ''), false); });
+    var a = el('a', 'btn btn-light', 'Отправить заказ в Telegram');
+    a.href = shareUrl; a.target = '_blank'; a.rel = 'noopener';
+    a.addEventListener('click', function () { track('order_channel', { channel: 'Telegram', payment: paymentMethod }); });
+    btns.appendChild(a);
     box.hidden = false;
-    box.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
-    note(T.copied);
+    window.open(shareUrl, '_blank', 'noopener');
   });
 
   function copyText(text) {
