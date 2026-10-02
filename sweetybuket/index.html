@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sweety Buket — цветы и клубника в шоколаде с доставкой по Москве</title>
+<meta name="description" content="Sweety Buket — букеты из роз и пионов, монобукеты, корзины, цветы в коробке и клубника в шоколаде. Доставка по Москве и МО, заказы круглосуточно.">
+<link rel="canonical" href="https://xugushik-source.github.io/flowers/sweetybuket/">
+<meta name="theme-color" content="#140E11">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sweety Buket">
+<meta property="og:title" content="Sweety Buket — позвольте цветам говорить за вас">
+<meta property="og:description" content="Цветы и клубника в шоколаде с доставкой по Москве. Заказ в WhatsApp.">
+<meta property="og:url" content="https://xugushik-source.github.io/flowers/sweetybuket/">
+<meta property="og:image" content="https://xugushik-source.github.io/flowers/sweetybuket/assets/video/reel2.jpg">
+<meta property="og:locale" content="ru_RU">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23140E11'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' font-style='italic' text-anchor='middle' fill='%23D9A3AE'%3ESB%3C/text%3E%3C/svg%3E">
+<link rel="preload" as="image" href="assets/video/reel2.webp" fetchpriority="high">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+<script>
+  /* Splash runs once per browser session; JS-only so the page works without it. */
+  (function () {
+    var d = document.documentElement;
+    d.classList.add('js');
+    var seen = false;
+    try { seen = sessionStorage.getItem('sb_intro') === '1'; } catch (e) {}
+    d.classList.add(seen ? 'intro-done' : 'intro-pending');
+    /* failsafe: never leave the page hidden behind the intro */
+    setTimeout(function () {
+      if (d.classList.contains('intro-pending') && !window.LF_READY) {
+        d.classList.remove('intro-pending'); d.classList.add('intro-done');
+      }
+    }, 5000);
+  })();
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Florist","name":"Sweety Buket","telephone":"+79165896600","address":{"@type":"PostalAddress","addressLocality":"Москва","addressCountry":"RU"},"openingHours":"Mo-Su 00:00-24:00","areaServed":"Москва и Московская область","url":"https://xugushik-source.github.io/flowers/sweetybuket/","sameAs":["https://www.instagram.com/sweetybuket/"]}
+</script>
+</head>
+<body>
+
+<a class="skip" href="#catalog">К каталогу</a>
+
+<!-- ============ SPLASH ============ -->
+<section class="splash" id="splash" aria-label="Sweety Buket">
+  <div class="splash-bg">
+    <video autoplay muted loop playsinline preload="auto" poster="assets/video/reel2.jpg" aria-hidden="true">
+      <source src="assets/video/reel2.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="splash-shade"></div>
+  <div class="splash-inner">
+    <h1 class="splash-logo">
+      <span class="mask"><span class="mask-in" style="--d:0ms">Sweety</span></span>
+      <span class="mask"><span class="mask-in" style="--d:120ms">Buket</span></span>
+    </h1>
+    <p class="splash-tag"><span class="mask"><span class="mask-in" style="--d:570ms">Цветы · Клубника · Москва</span></span></p>
+    <p class="splash-line"><span class="mask"><span class="mask-in" style="--d:970ms">Позвольте цветам говорить за вас</span></span></p>
+    <button class="btn btn-light splash-cta" id="splashCta" type="button">Выбрать букет</button>
+  </div>
+  <div class="splash-progress" aria-hidden="true"><span></span></div>
+</section>
+
+<!-- ============ HEADER ============ -->
+<header class="hdr" id="hdr">
+  <a class="hdr-logo" href="#top" data-nav="top">Sweety Buket</a>
+  <div class="hdr-right">
+    <button class="hdr-cart" id="hdrCart" type="button" aria-label="Корзина" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+      <span class="hdr-count" id="hdrCount">0</span>
+    </button>
+    <button class="hdr-menu" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu">
+      <span class="hdr-menu-lbl">Меню</span>
+      <span class="burger" aria-hidden="true"><i></i><i></i></span>
+    </button>
+  </div>
+</header>
+
+<!-- ============ MENU ============ -->
+<div class="menu" id="menu" hidden>
+  <nav class="menu-nav" aria-label="Разделы">
+    <a href="#collections" data-nav="collections"><span>Коллекции</span></a>
+    <a href="#catalog" data-nav="catalog"><span>Букеты</span></a>
+    <a href="#gifts" data-nav="gifts"><span>Видео</span></a>
+    <a href="#delivery" data-nav="delivery"><span>Доставка</span></a>
+    <a href="#contacts" data-nav="contacts"><span>Контакты</span></a>
+  </nav>
+  <div class="menu-foot">
+    <a class="menu-wa" data-wa-link href="#" target="_blank" rel="noopener">WhatsApp</a>
+    <a class="menu-wa" href="https://t.me/+79165896600" target="_blank" rel="noopener">Telegram</a>
+    <a class="menu-wa" href="https://www.instagram.com/sweetybuket/" target="_blank" rel="noopener">Instagram</a>
+  </div>
+</div>
+
+<main id="top" class="main">
+
+  <p class="promo">Заказы круглосуточно · Доставка по Москве и МО</p>
+
+  <!-- ============ OCCASIONS ============ -->
+  <section class="sec sec-occasions" id="occasions" aria-labelledby="occTtl">
+    <div class="sec-head">
+      <h2 class="h-xl" id="occTtl" data-reveal-text>Для какого момента?</h2>
+      <p class="lead" data-reveal>Найдите цветы для нужного чувства.</p>
+    </div>
+    <div class="occ-grid" id="occGrid"></div>
+  </section>
+
+  <!-- ============ COLLECTIONS ============ -->
+  <section class="sec sec-collections" id="collections" aria-labelledby="colTtl">
+    <div class="sec-head">
+      <p class="eyebrow" data-reveal>Sweety Buket</p>
+      <h2 class="h-xl" id="colTtl" data-reveal-text>Коллекции</h2>
+    </div>
+    <div class="col-grid" id="colGrid"></div>
+  </section>
+
+  <!-- ============ FEATURED ============ -->
+  <section class="sec sec-featured" id="featured" aria-labelledby="featTtl">
+    <div class="sec-head">
+      <p class="eyebrow" data-reveal>Любимое подписчиков</p>
+      <h2 class="h-xl" id="featTtl" data-reveal-text>Хиты Sweety</h2>
+    </div>
+    <div class="feat-grid" id="featGrid"></div>
+  </section>
+
+  <!-- ============ CATALOG ============ -->
+  <section class="sec sec-catalog" id="catalog" aria-labelledby="catTtl">
+    <div class="sec-head">
+      <h2 class="h-xl" id="catTtl" data-reveal-text>Коллекция цветов</h2>
+    </div>
+    <div class="catbar" id="catbar">
+      <div class="catbar-scroll" id="catbarScroll" role="tablist" aria-label="Категории"></div>
+    </div>
+    <div class="filter-chip" id="occChip" hidden></div>
+    <div class="grid" id="grid" aria-live="polite"></div>
+  </section>
+
+  <!-- ============ STORY ============ -->
+  <section class="story" id="story" aria-labelledby="storyTtl">
+    <div class="story-img" data-reveal-img>
+      <picture>
+        <source srcset="assets/occasions/her.webp" type="image/webp">
+        <img src="assets/occasions/her.jpg" alt="Букет из 51 пиона" loading="lazy" decoding="async" width="900" height="1125">
+      </picture>
+    </div>
+    <div class="story-text">
+      <h2 class="h-xl" id="storyTtl" data-reveal-text>Позвольте цветам<br>говорить<br>за вас.</h2>
+      <p class="lead" data-reveal>Принимаем заказы круглосуточно и бережно доставляем по Москве и Московской области.</p>
+    </div>
+  </section>
+
+  <!-- ============ REELS ============ -->
+  <section class="sec sec-reels" id="gifts" aria-labelledby="reelTtl">
+    <div class="sec-head">
+      <p class="eyebrow" data-reveal>Instagram @sweetybuket</p>
+      <h2 class="h-xl" id="reelTtl" data-reveal-text>Букеты в движении</h2>
+    </div>
+    <div class="reels" id="reels"></div>
+    <a class="btn btn-ghost reels-more" href="https://www.instagram.com/sweetybuket/" target="_blank" rel="noopener">Больше в Instagram</a>
+  </section>
+
+  <!-- ============ DELIVERY ============ -->
+  <section class="sec sec-delivery" id="delivery" aria-labelledby="delTtl">
+    <div class="sec-head">
+      <h2 class="h-xl" id="delTtl" data-reveal-text>Доставим по Москве<br>и области</h2>
+      <p class="lead" data-reveal>Выберите букет, укажите адрес и время. Цену и детали подтвердим в WhatsApp.</p>
+    </div>
+    <ol class="steps" data-stagger>
+      <li><span class="step-n">01</span><span class="step-t">Выберите</span></li>
+      <li><span class="step-n">02</span><span class="step-t">Укажите время</span></li>
+      <li><span class="step-n">03</span><span class="step-t">Мы доставим</span></li>
+    </ol>
+    <p class="del-note" data-reveal id="delNote"></p>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="ftr" id="contacts">
+  <div class="ftr-logo">Sweety Buket</div>
+  <p class="ftr-line">Цветы и клубника в шоколаде · Москва и МО</p>
+  <p class="ftr-line">Заказы принимаем круглосуточно</p>
+  <div class="ftr-links">
+    <a data-wa-link href="#" target="_blank" rel="noopener">WhatsApp</a>
+    <a href="tel:+79165896600">+7 916 589-66-00</a>
+    <a href="tel:+79153735330">+7 915 373-53-30</a>
+    <a href="https://t.me/+79165896600" target="_blank" rel="noopener">Telegram</a>
+    <a href="https://www.instagram.com/sweetybuket/" target="_blank" rel="noopener">Instagram</a>
+  </div>
+  <p class="ftr-copy">© Sweety Buket</p>
+</footer>
+
+<!-- ============ CART BAR ============ -->
+<div class="cartbar" id="cartbar" hidden>
+  <button class="cartbar-btn" id="cartbarBtn" type="button">
+    <span class="cartbar-info"><span id="cbCount">0</span><span class="cartbar-sep">·</span><span id="cbSum">0</span></span>
+    <span class="cartbar-cta">Оформить <span aria-hidden="true">→</span></span>
+  </button>
+</div>
+
+<!-- ============ PRODUCT SHEET ============ -->
+<div class="sheet-wrap" id="pSheet" hidden>
+  <div class="sheet-ov" data-close></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="psName">
+    <button class="sheet-x" type="button" data-close aria-label="Закрыть">×</button>
+    <div class="sheet-scroll">
+      <div class="ps-img"><img id="psImg" alt=""></div>
+      <div class="ps-body">
+        <p class="ps-no" id="psNo"></p>
+        <h2 class="ps-name" id="psName"></h2>
+        <p class="ps-desc" id="psDesc"></p>
+        <ul class="ps-items" id="psItems" hidden></ul>
+        <div class="ps-price" id="psPrice"></div>
+
+        <div class="ps-block" id="psCardBlock">
+          <label class="toggle">
+            <input type="checkbox" id="psCard">
+            <span class="toggle-ui" aria-hidden="true"></span>
+            <span class="toggle-lbl">Добавить записку</span>
+          </label>
+          <div class="ps-cardtext" id="psCardWrap" hidden>
+            <label class="f-lbl" for="psCardText">Текст записки</label>
+            <textarea class="f-inp" id="psCardText" rows="3" maxlength="300" placeholder="Напишите несколько слов…"></textarea>
+          </div>
+        </div>
+
+        <div class="ps-block" id="psAddonsBlock">
+          <h3 class="ps-sub">Добавить к подарку</h3>
+          <div class="addons" id="psAddons"></div>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary btn-block" id="psAdd" type="button">
+        <span id="psAddLbl">Добавить в корзину</span><span class="btn-sum" id="psSum"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CHECKOUT SHEET ============ -->
+<div class="sheet-wrap" id="coSheet" hidden>
+  <div class="sheet-ov" data-close></div>
+  <div class="sheet sheet-tall" role="dialog" aria-modal="true" aria-labelledby="coTtl">
+    <button class="sheet-x" type="button" data-close aria-label="Закрыть">×</button>
+    <div class="sheet-scroll">
+      <div class="co-body">
+        <h2 class="co-ttl" id="coTtl">Ваш заказ</h2>
+        <ul class="co-lines" id="coLines"></ul>
+
+        <h3 class="co-sub">Доставка</h3>
+        <div class="seg" role="radiogroup" aria-label="Способ получения" hidden>
+          <button type="button" class="seg-btn" role="radio" data-mode="d" id="modeD"><span>Доставка</span><small id="modeDNote"></small></button>
+          <button type="button" class="seg-btn" role="radio" data-mode="p" id="modeP"><span>Самовывоз</span><small>Москва</small></button>
+        </div>
+
+        <div class="fields">
+          <div class="f"><label class="f-lbl" for="fName">Ваше имя <b>*</b></label><input class="f-inp" id="fName" autocomplete="name" type="text"></div>
+          <div class="f"><label class="f-lbl" for="fPhone">Ваш телефон <b>*</b></label><input class="f-inp" id="fPhone" autocomplete="tel" type="tel" inputmode="tel" placeholder="+7 9XX XXX-XX-XX"></div>
+          <div class="f-row">
+            <div class="f"><label class="f-lbl" for="fRName">Имя получателя</label><input class="f-inp" id="fRName" type="text" placeholder="необязательно"></div>
+            <div class="f"><label class="f-lbl" for="fRPhone">Телефон получателя</label><input class="f-inp" id="fRPhone" type="tel" inputmode="tel" placeholder="необязательно"></div>
+          </div>
+          <div class="f" id="fAddrWrap"><label class="f-lbl" for="fAddr">Адрес доставки <b>*</b></label><input class="f-inp" id="fAddr" autocomplete="street-address" type="text" placeholder="Улица, дом, квартира"></div>
+
+          <div class="f">
+            <span class="f-lbl">Желаемое время</span>
+            <div class="days" id="days"></div>
+            <div class="slots" id="slots"></div>
+          </div>
+
+          <div class="f"><label class="f-lbl" for="fComment">Комментарий</label><textarea class="f-inp" id="fComment" rows="2" placeholder="Цвет ленты, особые пожелания…"></textarea></div>
+
+          <label class="toggle">
+            <input type="checkbox" id="fSurprise">
+            <span class="toggle-ui" aria-hidden="true"></span>
+            <span class="toggle-lbl">Это сюрприз</span>
+          </label>
+        </div>
+
+        <div class="co-total">
+          <div class="co-rows" id="coRows"></div>
+          <div class="co-sum"><span>Итого</span><strong id="coSum">—</strong></div>
+        </div>
+        <p class="co-err" id="coErr" role="alert" hidden></p>
+        <button class="co-clear" id="coClear" type="button">Очистить корзину</button>
+      </div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-wa btn-block" id="waBtn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.1.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.4-.3Z"/></svg>
+        Заказать в WhatsApp
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="note" id="note" role="status" aria-live="polite"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
