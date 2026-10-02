@@ -45,12 +45,26 @@
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
+  /* Responsive picture from pre-cropped derivatives (scripts/sweety_assets.py).
+     The crop is decided per photo at build time, so the frame ratio always
+     equals the image ratio: object-fit never has to cut anything. */
+  var CARD_SIZES = '(min-width: 1100px) 30vw, (min-width: 600px) 46vw, 92vw';
+  function srcset(name, v, ext) {
+    var ws = ((window.SB_IMG || {})[name] || {})[v] || [];
+    return ws.map(function (w) { return 'assets/optimized/' + name + '-' + v + '-' + w + '.' + ext + ' ' + w + 'w'; }).join(', ');
+  }
+  function fallback(name, v) {
+    var ws = ((window.SB_IMG || {})[name] || {})[v] || [800];
+    var w = ws.filter(function (x) { return x <= 800; }).pop() || ws[0];
+    return 'assets/optimized/' + name + '-' + v + '-' + w + '.jpg';
+  }
   function picture(name, alt, opts) {
     opts = opts || {};
-    var base = 'assets/' + (opts.dir || 'products') + '/' + name;
-    return '<picture><source srcset="' + base + '.webp" type="image/webp">' +
-      '<img src="' + base + '.jpg" alt="' + esc(alt) + '"' + (opts.eager ? '' : ' loading="lazy"') +
-      ' decoding="async" width="' + (opts.w || 800) + '" height="' + (opts.h || 1000) + '"></picture>';
+    var v = opts.v || 'card', sizes = opts.sizes || CARD_SIZES;
+    return '<picture><source type="image/avif" srcset="' + srcset(name, v, 'avif') + '" sizes="' + sizes + '">' +
+      '<source type="image/webp" srcset="' + srcset(name, v, 'webp') + '" sizes="' + sizes + '">' +
+      '<img src="' + fallback(name, v) + '" srcset="' + srcset(name, v, 'jpg') + '" sizes="' + sizes + '" alt="' + esc(alt) + '"' +
+      (opts.eager ? '' : ' loading="lazy"') + ' decoding="async" width="' + (opts.w || 800) + '" height="' + (opts.h || 1000) + '"></picture>';
   }
   /* broken images keep their frame and show a neutral fallback (ТЗ §69) */
   document.addEventListener('error', function (e) {
@@ -116,7 +130,7 @@
       var b = el('button', 'occ rv');
       b.type = 'button';
       b.style.setProperty('--sd', (i % 3) * 90 + 'ms');
-      b.innerHTML = picture(o.id, '', { dir: 'occasions', w: 900, h: 1125 }) +
+      b.innerHTML = picture('occ-' + o.id, '', { v: 'v', sizes: '(min-width: 900px) 30vw, 46vw' }) +
         '<span class="occ-name">' + esc(o.name) + '<span class="occ-arrow">Смотреть →</span></span>';
       b.addEventListener('click', function () { selectOccasion(o.id); });
       g.appendChild(b);
@@ -127,6 +141,7 @@
 
   function renderCollections() {
     var g = $('#colGrid');
+    if (!g) return;
     var tiles = D.CATEGORIES.filter(function (c) { return c.tile; }).map(function (c) {
       var n = catItems(c.id).length;
       return { name: c.long || c.name, img: c.tile, n: n || T.soon, go: function () { selectCategory(c.id, true); } };
@@ -147,7 +162,7 @@
 
   function cardHTML(p) {
     var price = (p.oldPrice ? '<s>' + p.oldPrice + ' ' + T.currency + '</s>' : '') + money(p.price);
-    var sub = p.kind === 'combo' ? '' : '<p class="card-no">No. ' + pad(p.no) + '</p>';
+    var sub = '';
     var desc = p.kind === 'combo'
       ? '<ul class="combo-items">' + p.items.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'
       : '<p class="card-desc">' + esc(p.description) + '</p>';
@@ -173,18 +188,27 @@
     return b;
   }
 
+  /* signature: editorial rhythm, one large + two small, next row mirrored */
   function renderFeatured() {
     var g = $('#featGrid');
-    D.PRODUCTS.filter(function (p) { return p.featured; }).slice(0, 6).forEach(function (p, i) { g.appendChild(makeCard(p, i, 'featured')); });
+    if (!g) return;
+    (D.FEATURED || []).map(function (id) { return byId[id]; }).filter(Boolean).forEach(function (p, i) {
+      var c = makeCard(p, i, 'featured');
+      c.classList.add(i % 3 === 0 ? 'is-lead' : 'is-side');
+      g.appendChild(c);
+    });
   }
+  /* flowers + chocolate strawberries as one gift */
   function renderCombos() {
-    var g = $('#comboGrid');
-    D.COMBOS.forEach(function (c, i) { g.appendChild(makeCard(c, i, 'gifts')); });
+    var g = $('#giftGrid');
+    if (!g) return;
+    D.PRODUCTS.filter(function (p) { return p.category === 'combo' || p.category === 'sweets'; })
+      .forEach(function (p, i) { g.appendChild(makeCard(p, i, 'gifts')); });
   }
 
   /* reels: muted loops that play only while on screen */
   function renderReels() {
-    var box = document.getElementById('reels');
+    var box = document.getElementById('reelBox');
     if (!box || !D.REELS) return;
     D.REELS.forEach(function (r) {
       var f = el('figure', 'reel rv');
@@ -192,7 +216,7 @@
         '<figcaption class="reel-cap">' + esc(r.title) + '</figcaption>';
       box.appendChild(f);
     });
-    var vids = $$('#reels video');
+    var vids = $$('#reelBox video');
     if (reduced || !('IntersectionObserver' in window)) return;
     var vo = new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting) { e.target.play().catch(function () {}); } else e.target.pause(); });
@@ -355,7 +379,11 @@
     track('product_opened', { id: id, source: source || '' });
 
     var img = $('#psImg');
-    img.src = 'assets/products/' + p.image + '.jpg';
+    var ps = '(min-width: 768px) 60vw, 100vw';
+    $('#psSrcAvif').srcset = srcset(p.image, 'card', 'avif'); $('#psSrcAvif').sizes = ps;
+    $('#psSrcWebp').srcset = srcset(p.image, 'card', 'webp'); $('#psSrcWebp').sizes = ps;
+    img.srcset = srcset(p.image, 'card', 'jpg'); img.sizes = ps;
+    img.src = fallback(p.image, 'card');
     img.alt = p.kind === 'combo' ? 'Подарочный набор «' + p.name + '»' : 'Букет «' + p.name + '»';
     $('#psNo').textContent = p.kind === 'combo' ? 'Готовый подарок' : 'No. ' + pad(p.no);
     $('#psName').textContent = p.name;
@@ -622,6 +650,7 @@
     if (ticking) return; ticking = true;
     requestAnimationFrame(function () {
       hdr.classList.toggle('is-compact', window.pageYOffset > 40);
+      hdr.classList.toggle('is-over', window.pageYOffset < 40);
       parallax();
       ticking = false;
     });
@@ -629,7 +658,7 @@
   window.addEventListener('scroll', onScroll, { passive: true });
 
   /* soft parallax, 3% of the frame, editorial image only */
-  var px = $('.story-img picture');
+  var px = $('.brand-media picture');
   if (px && !reduced) { px.setAttribute('data-parallax', ''); px.style.display = 'block'; }
   function parallax() {
     if (!px || reduced) return;
@@ -672,42 +701,30 @@
   function startReveals() { revealsLive = true; observeReveals(); }
 
   /* ======================================================================
-     SPLASH → PAGE (one scene)
+     OPENING: wine panels part (~2 s) and the hero is already behind them.
+     Once per session (sessionStorage), skipped on any interaction.
      ====================================================================== */
-  var splash = $('#splash');
-  var HOLD = reduced ? 1200 : 2900;
-  var revealed = false;
+  var opening = $('#opening'), hero = $('.hero');
+  var opened = false;
 
-  function reveal(src) {
-    if (revealed) return; revealed = true;
+  function openPage() {
+    if (opened) return; opened = true;
     try { sessionStorage.setItem('sb_intro', '1'); } catch (e) {}
-    window.scrollTo(0, 0);
     doc.classList.remove('intro-pending');
     doc.classList.add('intro-leaving');
-    splash.classList.add('is-leaving');
-    setTimeout(startReveals, reduced ? 0 : 280);        // next screen opens its heading as the splash lifts
-    setTimeout(function () {
-      doc.classList.remove('intro-leaving');
-      doc.classList.add('intro-done');
-      splash.setAttribute('aria-hidden', 'true');
-    }, reduced ? 450 : 1150);
-    if (src === 'cta') track('splash_cta', {});
+    opening.classList.add('is-open');
+    hero.classList.add('is-in');                         // hero text rises as the panels part
+    setTimeout(startReveals, reduced ? 0 : 500);
+    setTimeout(function () { doc.classList.remove('intro-leaving'); doc.classList.add('intro-done'); }, reduced ? 350 : 1150);
   }
 
-  function initSplash() {
-    if (!doc.classList.contains('intro-pending')) { startReveals(); return; }
-    splash.style.setProperty('--hold', HOLD + 'ms');
-    requestAnimationFrame(function () { requestAnimationFrame(function () { splash.classList.add('is-in'); }); });
-    var timer = setTimeout(function () { reveal('auto'); }, HOLD + 200);
-    $('#splashCta').addEventListener('click', function () { clearTimeout(timer); reveal('cta'); });
-    // a scroll gesture also opens the page
-    var y0 = null;
-    splash.addEventListener('wheel', function (e) { if (e.deltaY > 8) { clearTimeout(timer); reveal('wheel'); } }, { passive: true });
-    splash.addEventListener('touchstart', function (e) { y0 = e.touches[0].clientY; }, { passive: true });
-    splash.addEventListener('touchmove', function (e) { if (y0 !== null && y0 - e.touches[0].clientY > 40) { clearTimeout(timer); reveal('swipe'); } }, { passive: true });
-    document.addEventListener('keydown', function k(e) {
-      if (['Enter', ' ', 'ArrowDown', 'PageDown', 'Escape'].indexOf(e.key) > -1 && !revealed) { clearTimeout(timer); reveal('key'); }
-    });
+  function initOpening() {
+    if (!doc.classList.contains('intro-pending')) { hero.classList.add('is-in'); startReveals(); return; }
+    window.scrollTo(0, 0);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { opening.classList.add('is-in'); }); });
+    var t = setTimeout(openPage, reduced ? 500 : 1250);
+    var skip = function () { clearTimeout(t); openPage(); };
+    ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (ev) { window.addEventListener(ev, skip, { once: true, passive: true }); });
   }
 
   /* ======================================================================
@@ -723,5 +740,5 @@
   renderReels();
   onCartChange();
   window.LF_READY = true;
-  initSplash();
+  initOpening();
 })();

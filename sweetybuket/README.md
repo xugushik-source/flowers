@@ -1,9 +1,10 @@
 # Sweety Buket
 
-Сайт по образцу La Fleur (тот же код, своя палитра). Фото и видео из Instagram @sweetybuket.
+Сайт на общем каркасе с La Fleur, свой слой бренда в `assets/css/sweety.css`. Фото и видео из Instagram @sweetybuket.
 
-- Данные: `assets/js/data.js` (товары, категории, контакты). У каждого товара `source` — ссылка на пост.
-- Цены пока неизвестны: `price: null` → «Цена по запросу». Впишите число, и цена появится в карточке, корзине и сообщении WhatsApp.
-- Фото: исходник в `src/<id>.jpg` → `python3 scripts/process_sweety.py <id>` (нужны Pillow и `rembg[cpu]`).
-- Видео: `assets/video/reelN.mp4` + обложка `reelN.jpg/webp`; список — `REELS` в `data.js`. Заставка — `reel2`.
+- Данные: `assets/js/data.js` (товары, категории, поводы, хиты `FEATURED`, видео `REELS`, контакты). У каждого товара `source` — ссылка на пост.
+- Цены пока неизвестны: `price: null` → «Цена по запросу». Впишите число — цена появится в карточке, корзине и сообщении WhatsApp.
+- Фото: оригиналы в `originals/` (без изменений), кроп и форматы — `python3 scripts/sweety_assets.py [имя]` (Pillow с AVIF). Кроп и фокус для каждого фото задаются в скрипте; список размеров попадает в `assets/js/images.js`.
+- Новый товар: положить фото в `originals/<id>.jpg`, запустить скрипт, добавить строку в `PRODUCTS`.
+- Разбор фото: `PHOTO-AUDIT.md`, недостающие кадры: `IMAGE-GAPS.md`.
 - Заказ: WhatsApp +7 916 589-66-00; в меню и подвале также Telegram, второй номер и Instagram.
