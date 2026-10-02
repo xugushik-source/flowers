@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Условия заказа, доставки и возврата — SweetyBuket</title>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://xugushik-source.github.io/flowers/sweetybuket/usloviya.html">
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/doc.css">
+</head>
+<body>
+<div class="doc">
+  <header class="doc-top"><a href="./">SweetyBuket</a><a class="back" href="./">← На сайт</a></header>
+  <main>
+  <h1>Условия заказа, доставки и возврата</h1>
+  <p class="upd">Редакция от <span data-l="updated"></span></p>
+  <div class="req">
+    <p><b>Оператор / продавец:</b> <span data-l="seller"></span></p>
+    <p><b>ИНН:</b> <span data-l="inn"></span> · <b>ОГРНИП:</b> <span data-l="ogrnip"></span></p>
+    <p><b>Адрес для обращений:</b> <span data-l="address"></span></p>
+    <p><b>E-mail для запросов по персональным данным:</b> <span data-l="email"></span></p>
+  </div>
+
+  <h2>Как оформить заказ</h2>
+  <ol>
+    <li>Выберите букет на сайте и добавьте его в корзину.</li>
+    <li>Укажите данные заказчика, получателя, адрес и желаемое время доставки.</li>
+    <li>Нажмите «Оформить заказ»: текст заказа скопируется. Отправьте его нам в мессенджере или продиктуйте по телефону.</li>
+    <li>Мы подтвердим наличие, итоговую стоимость и время доставки. Заказ считается принятым после подтверждения.</li>
+  </ol>
+
+  <h2>Цены</h2>
+  <p>Цены указаны в рублях. Если у позиции указано «Цена по запросу», стоимость сообщается при подтверждении заказа до его оплаты. Состав и оформление живых цветов могут незначительно отличаться от фотографии в зависимости от сезона и наличия; существенные изменения согласовываются с заказчиком.</p>
+
+  <h2>Оплата</h2>
+  <p class="tbd">Способы оплаты и условия предоплаты уточняются и будут указаны здесь.</p>
+
+  <h2>Доставка</h2>
+  <p>Доставка выполняется по Москве и Московской области. Заказы принимаются круглосуточно. Стоимость и время доставки сообщаются при подтверждении заказа.</p>
+
+  <h2>Возврат и обмен</h2>
+  <p>Если букет или композиция доставлены ненадлежащего качества (повреждены, не соответствуют согласованному заказу), сообщите нам при получении или в тот же день и пришлите фотографию — мы заменим заказ или вернём деньги.</p>
+  <p>Живые цветы (растения) и пищевые продукты, в том числе клубника в шоколаде, надлежащего качества обмену и возврату не подлежат (перечень, утверждённый постановлением Правительства РФ от 31.12.2020 № 2463).</p>
+  <p>До передачи заказа в работу заказчик может отказаться от него; после начала сборки букета Оператор вправе удержать фактически понесённые расходы.</p>
+  </main>
+</div>
+<script src="assets/js/data.js"></script>
+<script>
+  /* seller details come from one place: LEGAL in assets/js/data.js */
+  (function () {
+    var L = (window.LF_DATA || {}).LEGAL || {};
+    document.querySelectorAll('[data-l]').forEach(function (el) {
+      var v = L[el.getAttribute('data-l')];
+      if (v) el.textContent = v; else { el.textContent = 'уточняется'; el.className = 'tbd'; }
+    });
+  })();
+</script>
+</body>
+</html>

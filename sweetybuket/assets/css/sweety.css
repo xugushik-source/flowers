@@ -211,3 +211,19 @@ body { background: var(--ink); }
 .ps-no { display: none; }
 @media (min-width: 768px) { #pSheet .sheet-foot { width: 40%; } }
 .ftr-logo { font-size: clamp(24px, 7.4vw, 40px); letter-spacing: .14em; overflow-wrap: anywhere; }
+
+/* ---------- legal: consent, order hand-off, seller details ---------- */
+.consent { display: flex; gap: 12px; align-items: flex-start; margin-top: 20px; font-size: 14px; line-height: 1.5; color: var(--ivory-70); cursor: pointer; }
+.consent input { flex: 0 0 auto; width: 22px; height: 22px; margin-top: 1px; accent-color: var(--champ); }
+.consent a { color: var(--ivory); text-decoration: underline; text-underline-offset: 3px; }
+.co-send { margin-top: 20px; padding: 18px; border: 1px solid var(--champ); background: rgba(215, 166, 174, .06); }
+.co-send-ttl { font-family: var(--serif); font-size: 24px; }
+.co-send-txt { font-size: 14px; color: var(--ivory-70); margin-top: 4px; }
+.co-send-btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+.co-send-btns .btn { min-height: 48px; padding: 0 18px; font-size: 12px; }
+.co-send-text { font-size: 13px; min-height: 120px; }
+.ftr-ru { font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--ivory-50); margin: -8px 0 14px; }
+.ftr-legal { max-width: 720px; margin: 28px auto 18px; display: flex; flex-direction: column; gap: 12px; font-size: 13px; color: var(--ivory-50); }
+.ftr-docs { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 20px; }
+.ftr-docs a { color: var(--ivory-70); text-decoration: underline; text-underline-offset: 3px; }
+.ftr-note { font-size: 12px; }

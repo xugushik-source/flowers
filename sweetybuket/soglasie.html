@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Согласие на обработку персональных данных — SweetyBuket</title>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://xugushik-source.github.io/flowers/sweetybuket/soglasie.html">
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/doc.css">
+</head>
+<body>
+<div class="doc">
+  <header class="doc-top"><a href="./">SweetyBuket</a><a class="back" href="./">← На сайт</a></header>
+  <main>
+  <h1>Согласие на обработку персональных данных</h1>
+  <p class="upd">Редакция от <span data-l="updated"></span></p>
+
+  <p>Отмечая поле «Я даю согласие на обработку персональных данных» при оформлении заказа на сайте SweetyBuket, я свободно, своей волей и в своём интересе даю конкретное, предметное, информированное, сознательное и однозначное согласие на обработку моих персональных данных в соответствии с Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных».</p>
+
+  <h2>Оператор</h2>
+  <div class="req">
+    <p><b>Оператор / продавец:</b> <span data-l="seller"></span></p>
+    <p><b>ИНН:</b> <span data-l="inn"></span> · <b>ОГРНИП:</b> <span data-l="ogrnip"></span></p>
+    <p><b>Адрес для обращений:</b> <span data-l="address"></span></p>
+    <p><b>E-mail для запросов по персональным данным:</b> <span data-l="email"></span></p>
+  </div>
+
+  <h2>Цели обработки</h2>
+  <p>Приём, подтверждение и исполнение заказа, доставка заказа и связь со мной по вопросам заказа.</p>
+
+  <h2>Перечень персональных данных</h2>
+  <ul>
+  <li>имя и номер телефона заказчика;</li>
+  <li>имя и номер телефона получателя (если указаны);</li>
+  <li>адрес доставки;</li>
+  <li>желаемые дата и время доставки;</li>
+  <li>текст записки к букету и комментарий к заказу.</li>
+</ul>
+
+  <h2>Действия с персональными данными</h2>
+  <p>Сбор, запись, систематизация, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, передача (предоставление, доступ) курьеру для доставки заказа, блокирование, удаление и уничтожение — с использованием средств автоматизации и без них.</p>
+
+  <h2>Срок действия и отзыв</h2>
+  <p>Согласие действует до достижения целей обработки, но не более трёх лет с момента исполнения заказа. Я могу отозвать согласие в любой момент, направив письменное заявление на адрес или e-mail Оператора. В этом случае Оператор прекращает обработку и уничтожает персональные данные в сроки, установленные законом, если иное не предусмотрено законом.</p>
+
+  <h2>Данные получателя</h2>
+  <p>Указывая имя и телефон получателя, я подтверждаю, что вправе передать их Оператору для доставки заказа.</p>
+
+  <p>Подробнее — в <a href="politika.html">политике обработки персональных данных</a>.</p>
+  </main>
+</div>
+<script src="assets/js/data.js"></script>
+<script>
+  /* seller details come from one place: LEGAL in assets/js/data.js */
+  (function () {
+    var L = (window.LF_DATA || {}).LEGAL || {};
+    document.querySelectorAll('[data-l]').forEach(function (el) {
+      var v = L[el.getAttribute('data-l')];
+      if (v) el.textContent = v; else { el.textContent = 'уточняется'; el.className = 'tbd'; }
+    });
+  })();
+</script>
+</body>
+</html>

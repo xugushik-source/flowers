@@ -1,0 +1,17 @@
+/* Legal documents: plain, readable, same palette as the site */
+:root { --bg: #170B10; --fg: #F6EFE8; --muted: rgba(246,239,232,.7); --line: rgba(246,239,232,.14); --accent: #D7A6AE; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--fg); font-family: "Jost", -apple-system, "Segoe UI", Roboto, sans-serif; font-weight: 300; font-size: 17px; line-height: 1.65; padding-inline: 20px; padding-block: 0 80px; }
+.doc { max-width: 760px; margin: 0 auto; }
+.doc-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 22px; border-bottom: 1px solid var(--line); margin-bottom: 40px; }
+.doc-top a { color: var(--fg); text-decoration: none; font-family: "Cormorant Garamond", Georgia, serif; font-size: 20px; letter-spacing: .2em; text-transform: uppercase; }
+.doc-top .back { font-family: inherit; font-size: 13px; letter-spacing: .14em; color: var(--accent); }
+h1 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 400; font-size: clamp(32px, 7vw, 48px); line-height: 1.1; margin-bottom: 10px; text-wrap: balance; }
+.upd { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+h2 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 26px; margin: 36px 0 10px; }
+p, li { margin-bottom: 10px; max-width: 68ch; }
+ul, ol { padding-left: 22px; }
+a { color: var(--accent); }
+.req { padding: 16px 18px; border: 1px solid var(--line); margin: 14px 0 6px; font-size: 15px; }
+.req b { font-weight: 500; }
+.tbd { color: var(--accent); font-style: italic; }

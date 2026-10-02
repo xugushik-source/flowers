@@ -2,14 +2,35 @@
    SweetyBuket — catalogue data
    Photos and names come from Instagram @sweetybuket (`source` = the post).
    PRICES ARE NOT KNOWN YET: `price: null` shows "Цена по запросу" and the
-   order goes to WhatsApp for confirmation. Put a number to show a price.
+   order is confirmed in a chat or by phone. Put a number to show a price.
    ========================================================================== */
 window.LF_DATA = (function () {
   var WHATSAPP = '79165896600';           // from @sweetybuket captions (Telegram/WhatsApp)
   var WHATSAPP_2 = '79153735330';
   var PHONE_DISPLAY = '+7 916 589-66-00';
 
-  var DELIVERY = null;                    // delivery cost unknown: confirmed in WhatsApp
+  /* Order channels. WhatsApp is blocked in Russia (since Feb 2026), so it is
+     off by default. Fill `max` with the shop's MAX link when it exists. */
+  var CHANNELS = {
+    telegram: '79165896600',       // opens the chat; the order text is copied for pasting
+    max: '',                       // e.g. 'https://max.ru/...'
+    whatsapp: '',                  // leave empty while WhatsApp is blocked in RF
+    phones: ['+7 916 589-66-00', '+7 915 373-53-30']
+  };
+
+  /* Seller details required on the site (Закон о защите прав потребителей,
+     Правила дистанционной продажи, 152-ФЗ). FILL BEFORE LAUNCH — empty
+     fields are shown as «уточняется». */
+  var LEGAL = {
+    seller: 'ИП Эваджян Асмик Арутюновна',
+    inn: '640404370256',
+    ogrnip: '319645100093662',
+    address: '',       // адрес для претензий и запросов по персональным данным
+    email: '',         // e-mail для запросов субъектов персональных данных
+    updated: '02.10.2026'
+  };
+
+  var DELIVERY = null;                    // delivery cost unknown: confirmed with the customer
   var SLOTS = ['9:00-12:00', '12:00-15:00', '15:00-18:00', '18:00-21:00', '21:00-24:00'];
 
   var CATEGORIES = [
@@ -92,7 +113,7 @@ window.LF_DATA = (function () {
     WHATSAPP: WHATSAPP, WHATSAPP_2: WHATSAPP_2, PHONE_DISPLAY: PHONE_DISPLAY,
     DELIVERY: DELIVERY, SLOTS: SLOTS,
     CATEGORIES: CATEGORIES, OCCASIONS: OCCASIONS,
-    ADDONS: ADDONS, PRODUCTS: PRODUCTS, FEATURED: FEATURED, COMBOS: COMBOS, REELS: REELS,
+    ADDONS: ADDONS, PRODUCTS: PRODUCTS, FEATURED: FEATURED, CHANNELS: CHANNELS, LEGAL: LEGAL, COMBOS: COMBOS, REELS: REELS,
     INSTAGRAM: 'https://www.instagram.com/sweetybuket/'
   };
 })();
@@ -103,7 +124,7 @@ window.LF_TEXT = {
   from: 'от',
   deliveryAsk: 'уточним',
   deliveryShort: 'Москва и МО',
-  deliveryNote: 'Доставка по Москве и Московской области. Заказы принимаем круглосуточно. Стоимость доставки и итоговую цену подтвердим в WhatsApp.',
+  deliveryNote: 'Доставка по Москве и Московской области. Заказы принимаем круглосуточно. Стоимость доставки и итоговую цену подтвердим в переписке или по телефону.',
   free: 'Бесплатно',
   choose: 'Выбрать',
   addToCart: 'Добавить в корзину',
@@ -113,8 +134,8 @@ window.LF_TEXT = {
   allCats: 'Все',
   occasionChip: 'Повод',
   soon: 'Скоро',
-  emptyCategory: 'Коллекция готовится. Напишите нам в WhatsApp — соберём букет под ваш запрос.',
-  writeUs: 'Написать в WhatsApp',
+  emptyCategory: 'Коллекция готовится. Напишите нам — соберём букет под ваш запрос.',
+  writeUs: 'Написать в Telegram',
   emptyFilter: 'Для этого сочетания пока нет позиций. Посмотрите всю коллекцию или напишите нам — соберём под ваш повод.',
   showAll: 'Показать все',
   cardAdd: 'Добавить записку',
@@ -132,9 +153,11 @@ window.LF_TEXT = {
   pickupNote: 'Москва',
   today: 'Сегодня',
   tomorrow: 'Завтра',
-  anyTime: 'Уточним в WhatsApp',
+  anyTime: 'Уточним при подтверждении',
   errRequired: 'Заполните отмеченные поля',
+  errConsent: 'Отметьте согласие на обработку персональных данных — без него мы не можем принять заказ.',
   errEmpty: 'Добавьте хотя бы один букет',
+  copied: 'Заказ скопирован. Вставьте его в чат.',
   waOpened: 'Открываем WhatsApp. Корзина сохранена, пока вы не отправите сообщение.',
   clearCart: 'Очистить корзину',
   remove: 'Убрать',
