@@ -460,21 +460,23 @@
   /* ======================================================================
      CHECKOUT
      ====================================================================== */
-  /* Personal data (names, phones, address, comment) is NOT kept in browser
-     storage: only the delivery mode is remembered. Older drafts are wiped. */
-  var form = { mode: (store.get(FORM_KEY, {}) || {}).mode };
-  try { localStorage.removeItem('sb_checkout_v1'); } catch (e) {}
-  store.set('sb_checkout_v2', { mode: form.mode });
+  /* Remember reusable checkout details on this device for repeat orders. */
+  var form = store.get(FORM_KEY, {}) || {};
   var co = { mode: form.mode === 'p' ? 'p' : 'd', day: 0, slot: '' };
-  ['fName', 'fPhone', 'fRName', 'fRPhone', 'fAddr', 'fComment'].forEach(function (fid) {
-    document.getElementById(fid).addEventListener('input', function () { this.classList.remove('is-invalid'); });
+  ['fName', 'fPhone', 'fRName', 'fRPhone', 'fAddr'].forEach(function (fid) {
+    var field = document.getElementById(fid);
+    if (form[fid]) field.value = form[fid];
+    field.addEventListener('input', function () {
+      this.classList.remove('is-invalid'); form[fid] = this.value; store.set(FORM_KEY, form);
+    });
   });
+  document.getElementById('fComment').addEventListener('input', function () { this.classList.remove('is-invalid'); });
   $('#fConsent').addEventListener('change', function () { if (this.checked) $('#coErr').hidden = true; });
 
   function deliveryFee() { return !!D.DELIVERY && co.mode === 'd' && subtotal() > 0 && subtotal() < D.DELIVERY.freeFrom ? D.DELIVERY.fee : 0; }
 
   function setMode(m) {
-    co.mode = m; form.mode = m; store.set(FORM_KEY, { mode: m });
+    co.mode = m; form.mode = m; store.set(FORM_KEY, form);
     $('#modeD').setAttribute('aria-checked', m === 'd' ? 'true' : 'false');
     $('#modeP').setAttribute('aria-checked', m === 'p' ? 'true' : 'false');
     $('#fAddrWrap').hidden = m !== 'd';
@@ -622,11 +624,10 @@
     cart = [];
     saveCart();
     onCartChange();
-    try { localStorage.removeItem(FORM_KEY); } catch (e) {}
-    $('.fields input, .fields textarea').forEach(function (field) {
-      if (field.type === 'checkbox') field.checked = false;
-      else field.value = '';
-    });
+    /* Keep name, phone, recipient and address for the next order. */
+    $('#fComment').value = '';
+    $('#fConsent').checked = false;
+    $('#fSurprise').checked = false;
     $('#coSend').hidden = false;
     var sentTitle = $('#coSend .co-send-ttl');
     var sentText = $('#coSend .co-send-txt');
