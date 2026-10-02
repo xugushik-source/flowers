@@ -8,26 +8,35 @@ if(!TOKEN) throw new Error('TELEGRAM_BOT_TOKEN is required');
 const API='https://api.telegram.org/bot'+TOKEN;
 const SITE='https://xugushik-source.github.io/flowers/sweetybuket/';
 const IMG='https://xugushik-source.github.io/flowers/sweetybuket/assets/optimized/';
+const SHOP='+7 916 589-66-00';
+const SHOP_URL='https://t.me/+79165896600';
 const sessions=new Map();
 const reply=(rows)=>({keyboard:rows.map(r=>r.map(text=>({text}))),resize_keyboard:true});
 const inline=(rows)=>({inline_keyboard:rows});
 const btn=(text,data)=>({text,callback_data:data});
 async function api(method,body={}){const r=await fetch(API+'/'+method,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!j.ok) throw new Error(method+': '+j.description);return j.result;}
 const send=(chat,text,reply_markup)=>api('sendMessage',{chat_id:chat,text,reply_markup});
+const caption=p=>'🌷 '+p.name+'\n'+money(p.price);
 async function photo(chat,p,markup){
- const imageUrl=IMG+p.id+'-card-800.jpg';
- const ir=await fetch(imageUrl);
+ // Не у всех фото есть вариант 800 (например, baskets-31935) — берём 480 как запасной.
+ let ir=await fetch(IMG+p.id+'-card-800.jpg');
+ if(!ir.ok) ir=await fetch(IMG+p.id+'-card-480.jpg');
  if(!ir.ok) throw new Error('imageFetch '+p.id+': HTTP '+ir.status);
  const bytes=await ir.arrayBuffer();
  const form=new FormData();
  form.set('chat_id',String(chat));
- form.set('caption','🌷 '+p.name+'\n'+money(p.price));
+ form.set('caption',caption(p));
  form.set('reply_markup',JSON.stringify(markup));
  form.set('photo',new Blob([bytes],{type:'image/jpeg'}),p.id+'.jpg');
  const r=await fetch(API+'/sendPhoto',{method:'POST',body:form});
  const j=await r.json();
  if(!j.ok) throw new Error('sendPhoto '+p.id+': '+j.description);
  return j.result;
+}
+// Фото не отправилось — показываем ту же карточку текстом, чтобы товар не пропал из подборки.
+async function card(chat,p,markup){
+ try{const r=await photo(chat,p,markup);console.log('PHOTO_OK',p.id);return r;}
+ catch(e){console.error('PHOTO_FAIL',p.id,e.message);return send(chat,caption(p),markup);}
 }
 function fresh(p=null){return {product:p,step:p?'date':'',date:'',slot:'',delivery:'',address:'',recipient:'',customer:'',phone:'',card:'',surprise:false};}
 function home(chat){sessions.delete(chat);return send(chat,'🌷 Sweety Buket\n\nВыберите, как удобнее оформить подарок. Я покажу реальные варианты с фото и ценами — без длинной анкеты.',inline([
@@ -40,15 +49,15 @@ function categoryName(c){return ({roses:'Розы',pions:'Пионы',mono:'Мо
 async function showList(chat,list,title){
  console.log('SHOW_LIST',chat,title,'count='+list.length);
  await send(chat,title+'\n\nСейчас покажу варианты карточками ниже 👇');
- let shown=0;
- for(const p of list.slice(0,6)){try{await photo(chat,p,inline([[btn('❤️ Хочу этот','product:'+p.id),btn('Похожие','similar:'+p.id)]]));shown++;console.log('PHOTO_OK',p.id);}catch(e){console.error('PHOTO_FAIL',p.id,e.message);}}
- if(!shown) return send(chat,'⚠️ Карточки сейчас не загрузились. Я уже вижу эту ошибку в журнале. Вернитесь в меню и попробуйте ещё раз чуть позже.',inline([[btn('🏠 Главное меню','home')]]));
+ if(!list.length) return send(chat,'В этой подборке сейчас нет вариантов. Посмотрите другие категории:',inline([[btn('Другие категории','cats'),btn('🏠 Главное меню','home')]]));
+ for(const p of list.slice(0,6)) await card(chat,p,inline([[btn('❤️ Хочу этот','product:'+p.id),btn('Похожие','similar:'+p.id)]]));
  return send(chat,'Выше — варианты из этой подборки. Можно выбрать любой кнопкой «❤️ Хочу этот» или продолжить поиск:',inline([[btn('Показать по другому бюджету','budgets'),btn('Другие категории','cats')],[btn('🏠 Главное меню','home')]]));
 }
 function filteredBudget(max,min=0){return products.filter(p=>p.price>min&&p.price<=max).sort((a,b)=>a.price-b.price);}
 async function chooseProduct(chat,p){
+ if(!p)return send(chat,'Этот букет больше не в каталоге. Посмотрите похожие варианты:',inline([[btn('🌹 Каталог','cats'),btn('🏠 Главное меню','home')]]));
  sessions.set(chat,{...fresh(p),step:'date'});
- await photo(chat,p,inline([[{text:'Посмотреть на сайте',url:SITE+'?product='+encodeURIComponent(p.id)}]]));
+ await card(chat,p,inline([[{text:'Посмотреть на сайте',url:SITE+'?product='+encodeURIComponent(p.id)}]]));
  return send(chat,'Отличный выбор. Когда нужен подарок?',inline([[btn('⚡ Сегодня','date:Сегодня'),btn('Завтра','date:Завтра')],[btn('Другая дата','date:other'),btn('← Назад в каталог','cats')]]));
 }
 async function orderSummary(chat,s){
@@ -65,7 +74,7 @@ async function orderSummary(chat,s){
  return send(chat,text,inline([[btn('✅ Всё верно — к оплате','confirm')],[btn('✏️ Начать заново','home')]]));
 }
 async function handleText(chat,text,user){
- if(text.startsWith('/start')){const id=text.split(/\s+/)[1];if(id&&byId[id])return chooseProduct(chat,byId[id]);return home(chat);}
+ if(text.startsWith('/start')){const id=text.split(/\s+/)[1];console.log('START',id||'-');if(id&&byId[id])return chooseProduct(chat,byId[id]);return home(chat);} // start=assistant и неизвестный id → главное меню помощника
  const s=sessions.get(chat);
  if(!s)return home(chat);
  if(s.step==='pick_budget'){const n=Number(text.replace(/\D/g,''));if(n>0)return showList(chat,filteredBudget(n),'Вот варианты в вашем бюджете:');return send(chat,'Напишите бюджет цифрами, например: 25000');}
@@ -90,7 +99,7 @@ async function handleCallback(q){
  if(d==='budgets')return send(chat,'Выберите бюджет:',inline([[btn('до 15 000 ₽','budget:15000'),btn('до 30 000 ₽','budget:30000')],[btn('30–60 тыс. ₽','range:30000:60000'),btn('60–100 тыс. ₽','range:60000:100000')],[btn('100 000 ₽ +','range:100000:999999'),btn('🏠 Меню','home')]]));
  if(d.startsWith('budget:'))return showList(chat,filteredBudget(Number(d.split(':')[1])),'Подходящие варианты:');
  if(d.startsWith('range:')){const [,a,b]=d.split(':').map(Number);return showList(chat,filteredBudget(b,a),'Подходящие варианты:');}
- if(d.startsWith('similar:')){const p=byId[d.slice(8)];return showList(chat,products.filter(x=>x.category===p.category&&x.id!==p.id).sort((a,b)=>Math.abs(a.price-p.price)-Math.abs(b.price-p.price)),'Похожие варианты:');}
+ if(d.startsWith('similar:')){const p=byId[d.slice(8)];if(!p)return chooseProduct(chat,null);return showList(chat,products.filter(x=>x.category===p.category&&x.id!==p.id).sort((a,b)=>Math.abs(a.price-p.price)-Math.abs(b.price-p.price)),'Похожие варианты:');}
  if(d.startsWith('product:'))return chooseProduct(chat,byId[d.slice(8)]);
  const s=sessions.get(chat); if(!s)return home(chat);
  if(d.startsWith('date:')){const v=d.slice(5);if(v==='other'){s.step='date_other';return send(chat,'Напишите дату, например: 5 октября');}s.date=v;s.step='slot';return askSlot(chat);}
@@ -100,15 +109,32 @@ async function handleCallback(q){
  if(d==='card:no'){s.card='';s.step='surprise';return askSurprise(chat);}
  if(d.startsWith('surprise:')){s.surprise=d.endsWith('yes');s.step='customer';return send(chat,'Как вас зовут?');}
  if(d==='confirm'){
-   if(ADMIN) await send(ADMIN,s.summary+'\nЗаказчик: '+s.customer+'\nTelegram: @'+(q.from.username||'нет username')+'\nChat ID: '+chat);
+   if(!s.summary)return home(chat);
+   if(!ADMIN){console.error('ADMIN_CHAT_ID is not set: order not delivered to shop');return send(chat,'Заказ сформирован, но автоматически передать его магазину сейчас не получилось. Пожалуйста, перешлите сообщение с заказом выше в Telegram магазина: '+SHOP+' 🌷',inline([[{text:'Написать магазину',url:SHOP_URL}],[btn('🏠 Главное меню','home')]]));}
+   await send(ADMIN,s.summary+'\nЗаказчик: '+s.customer+'\nTelegram: @'+(q.from.username||'нет username')+'\nChat ID: '+chat);
    s.step='payment';
    if(PAYMENT_URL)return send(chat,'Заказ сформирован. Нажмите кнопку для оплаты. После оплаты вернитесь сюда.',inline([[{text:'💳 Оплатить заказ',url:PAYMENT_URL}],[btn('✅ Я оплатил','paid'),btn('Связаться с менеджером','manager')]]));
    return send(chat,'Заказ сформирован ✅\n\n💳 Онлайн-оплата подключается. Платёжная кнопка появится здесь сразу после подключения ссылки Сбера/СБП.\n\nПока менеджер подтвердит наличие, доставку и способ оплаты.',inline([[btn('📩 Передать менеджеру','manager')],[btn('🏠 Главное меню','home')]]));
  }
- if(d==='manager'){if(ADMIN)await send(ADMIN,'⚡ Клиент ждёт связи\n'+(s.summary||'')+'\nTelegram: @'+(q.from.username||'нет username'));return send(chat,'Передал менеджеру. Он свяжется с вами для подтверждения заказа. 🌷');}
- if(d==='paid'){if(ADMIN)await send(ADMIN,'💳 Клиент нажал «Я оплатил». Нужна ручная проверка оплаты.\n'+(s.summary||''));return send(chat,'Спасибо. Мы получили отметку об оплате. Менеджер проверит поступление и подтвердит заказ. 🌷',inline([[btn('🏠 Главное меню','home')]]));}
+ if((d==='manager'||d==='paid')&&!ADMIN){console.error('ADMIN_CHAT_ID is not set');return send(chat,'Не удалось связаться с менеджером автоматически. Напишите магазину напрямую: '+SHOP,inline([[{text:'Написать магазину',url:SHOP_URL}]]));}
+ if(d==='manager'){await send(ADMIN,'⚡ Клиент ждёт связи\n'+(s.summary||'')+'\nTelegram: @'+(q.from.username||'нет username'));return send(chat,'Передал менеджеру. Он свяжется с вами для подтверждения заказа. 🌷');}
+ if(d==='paid'){await send(ADMIN,'💳 Клиент нажал «Я оплатил». Нужна ручная проверка оплаты.\n'+(s.summary||''));return send(chat,'Спасибо. Мы получили отметку об оплате. Менеджер проверит поступление и подтвердит заказ. 🌷',inline([[btn('🏠 Главное меню','home')]]));}
 }
 const PORT=Number(process.env.PORT||10000);
 http.createServer((req,res)=>{res.writeHead(200,{'content-type':'application/json; charset=utf-8'});res.end(JSON.stringify({ok:true,service:'sweety-buket-bot'}));}).listen(PORT,'0.0.0.0',()=>console.log('Health server listening on '+PORT));
+// Render при деплое шлёт SIGTERM старому экземпляру: выходим сразу, чтобы два getUpdates не конфликтовали (409).
+// Неподтверждённые апдейты Telegram отдаст новому экземпляру.
+for(const sig of ['SIGTERM','SIGINT'])process.on(sig,()=>{console.log(sig+': stopping polling');process.exit(0);});
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let offset=0; console.log('Sweety Buket bot 2.0 started');
-while(true){try{const updates=await api('getUpdates',{offset,timeout:45,allowed_updates:['message','callback_query']});for(const u of updates){offset=u.update_id+1;if(u.callback_query)await handleCallback(u.callback_query);else if(u.message?.text)await handleText(u.message.chat.id,u.message.text.trim(),u.message.from||{});}}catch(e){console.error(e.message);await new Promise(r=>setTimeout(r,2000));}}
+while(true){
+ let updates;
+ try{updates=await api('getUpdates',{offset,timeout:45,allowed_updates:['message','callback_query']});}
+ catch(e){const conflict=/Conflict/.test(e.message);console.error(conflict?'POLL_CONFLICT (другой экземпляр ещё работает)':'POLL_ERROR',e.message);await sleep(conflict?5000:2000);continue;}
+ for(const u of updates){
+  offset=u.update_id+1;
+  // Ошибка одного апдейта не должна ронять обработку остальных.
+  try{if(u.callback_query)await handleCallback(u.callback_query);else if(u.message?.text)await handleText(u.message.chat.id,u.message.text.trim(),u.message.from||{});}
+  catch(e){console.error('UPDATE_FAIL',u.update_id,e.message);}
+ }
+}

@@ -17,22 +17,26 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23140E11'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' font-style='italic' text-anchor='middle' fill='%23D9A3AE'%3ESB%3C/text%3E%3C/svg%3E">
 <link rel="preload" as="image" type="image/avif" media="(max-width: 899px)" imagesrcset="assets/optimized/hero-m-640.avif 640w, assets/optimized/hero-m-960.avif 960w, assets/optimized/hero-m-1280.avif 1280w" imagesizes="100vw" fetchpriority="high">
 <link rel="preload" as="image" type="image/avif" media="(min-width: 900px)" imagesrcset="assets/optimized/hero-d-900.avif 900w, assets/optimized/hero-d-1300.avif 1300w, assets/optimized/hero-d-1800.avif 1800w" imagesizes="55vw" fetchpriority="high">
-<link rel="stylesheet" href="assets/css/fonts.css?v=20261002-4">
-<link rel="stylesheet" href="assets/css/site.css?v=20261002-4">
-<link rel="stylesheet" href="assets/css/sweety.css?v=20261002-4">
+<link rel="stylesheet" href="assets/css/fonts.css?v=20261002-6">
+<link rel="stylesheet" href="assets/css/site.css?v=20261002-6">
+<link rel="stylesheet" href="assets/css/sweety.css?v=20261002-6">
 <script>
-  /* Splash runs once per browser session; JS-only so the page works without it. */
+  /* Progressive enhancement: the curtain and scroll reveals only run while JS
+     is healthy. Without JS nothing is hidden; if app.js fails to load or
+     throws during boot, the page drops to a static, fully visible state. */
   (function () {
     var d = document.documentElement;
     d.classList.add('js');
-    /* Brand curtain plays on every fresh page entry. */
-    d.classList.add('intro-pending');
-    /* failsafe: never leave the page hidden behind the intro */
-    setTimeout(function () {
-      if (d.classList.contains('intro-pending') && !window.LF_READY) {
-        d.classList.remove('intro-pending'); d.classList.add('intro-done');
-      }
-    }, 2200);
+    var nav = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]) || {};
+    /* curtain on every fresh load and reload, not on back/forward */
+    if (nav.type !== 'back_forward') d.classList.add('intro-pending');
+    function staticMode() {
+      if (window.LF_READY) return;
+      d.classList.remove('js', 'intro-pending', 'intro-leaving');
+      d.classList.add('intro-done');
+    }
+    window.addEventListener('error', staticMode);
+    setTimeout(staticMode, 3500);
   })();
 </script>
 <script type="application/ld+json">
@@ -102,7 +106,7 @@
         <span class="mask"><span class="mask-in" style="--d:340ms">говорить за вас.</span></span>
       </h1>
       <p class="hero-sub"><span class="mask"><span class="mask-in" style="--d:480ms">Заказы круглосуточно. Доставка по Москве и области.</span></span></p>
-      <button class="btn btn-light hero-cta" id="chooseBouquetBtn" type="button">Выбрать букет</button>
+      <a class="btn btn-light hero-cta" id="chooseBouquetBtn" href="#catalog" aria-haspopup="dialog">Выбрать букет</a>
     </div>
   </section>
 
@@ -334,6 +338,7 @@
           <div class="co-send-btns" id="coSendBtns"></div>
         </div>
         <button class="co-clear" id="coClear" type="button">Очистить корзину</button>
+        <button class="co-clear" id="coForget" type="button">Забыть мои данные на этом устройстве</button>
       </div>
     </div>
     <div class="sheet-foot">
@@ -359,8 +364,8 @@
 
 <div class="note" id="note" role="status" aria-live="polite"></div>
 
-<script src="assets/js/images.js?v=20261002-4"></script>
-<script src="assets/js/data.js?v=20261002-4"></script>
-<script src="assets/js/app.js?v=20261002-5"></script>
+<script src="assets/js/images.js?v=20261002-6"></script>
+<script src="assets/js/data.js?v=20261002-6"></script>
+<script src="assets/js/app.js?v=20261002-6"></script>
 </body>
 </html>
