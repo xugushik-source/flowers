@@ -213,12 +213,19 @@
     if (!box || !D.REELS) return;
     D.REELS.forEach(function (r) {
       var f = el('figure', 'reel rv');
-      f.innerHTML = '<video muted loop playsinline preload="none" poster="assets/video/' + r.file + '.jpg"><source src="assets/video/' + r.file + '.mp4" type="video/mp4"></video>' +
+      f.innerHTML = '<video muted loop playsinline preload="none" data-poster="assets/video/' + r.file + '.jpg"><source src="assets/video/' + r.file + '.mp4" type="video/mp4"></video>' +
         '<figcaption class="reel-cap">' + esc(r.title) + '</figcaption>';
       box.appendChild(f);
     });
     var vids = $$('#reelBox video');
-    if (reduced || !('IntersectionObserver' in window)) return;
+    /* posters are below the fold: load them only as the section approaches */
+    function poster(v) { if (!v.poster && v.dataset.poster) v.poster = v.dataset.poster; }
+    if (!('IntersectionObserver' in window)) { vids.forEach(poster); return; }
+    var po = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { poster(e.target); po.unobserve(e.target); } });
+    }, { rootMargin: '800px 0px' });
+    vids.forEach(function (v) { po.observe(v); });
+    if (reduced) return;
     var vo = new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting) { e.target.play().catch(function () {}); } else e.target.pause(); });
     }, { threshold: 0.5 });
@@ -327,7 +334,7 @@
     wrap.hidden = false;
     doc.classList.add('sheet-open');
     document.body.style.overflow = 'hidden';
-    wrap.querySelector('.sheet-scroll').scrollTop = 0;
+    var sc = wrap.querySelector('.sheet-scroll'); if (sc) sc.scrollTop = 0;
     requestAnimationFrame(function () { requestAnimationFrame(function () { wrap.classList.add('is-open'); }); });
     setTimeout(function () { var x = wrap.querySelector('.sheet-x'); if (x) x.focus({ preventScroll: true }); }, 50);
   }
@@ -336,16 +343,17 @@
     wrap.classList.remove('is-open');
     setTimeout(function () {
       wrap.hidden = true;
-      if ($('#pSheet').hidden && $('#coSheet').hidden) { doc.classList.remove('sheet-open'); document.body.style.overflow = ''; }
+      if (!$$('.sheet-wrap').some(function (x) { return !x.hidden; })) { doc.classList.remove('sheet-open'); document.body.style.overflow = ''; }
       if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
     }, reduced ? 200 : 560);
   }
   $$('.sheet-wrap').forEach(function (w) {
-    w.addEventListener('click', function (e) { if (e.target.closest('[data-close]')) closeSheet(w); });
+    w.addEventListener('click', function (e) { if (e.target.closest('[data-close], [data-choose-close]')) closeSheet(w); });
   });
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
-    if (!$('#coSheet').hidden) closeSheet($('#coSheet'));
+    if ($('#chooseSheet') && !$('#chooseSheet').hidden) closeSheet($('#chooseSheet'));
+    else if (!$('#coSheet').hidden) closeSheet($('#coSheet'));
     else if (!$('#pSheet').hidden) closeSheet($('#pSheet'));
     else if (doc.classList.contains('menu-open')) toggleMenu(false);
   });
@@ -542,6 +550,7 @@
   function openCheckout() {
     track('checkout_opened', { items: count(), total: subtotal() });
     $('#coErr').hidden = true;
+    resetSendState();
     setMode(co.mode);
     renderTime();
     renderCheckout();
@@ -551,6 +560,11 @@
   $('#cartbarBtn').addEventListener('click', openCheckout);
   $('#hdrCart').addEventListener('click', openCheckout);
   $('#coClear').addEventListener('click', function () { cart = []; onCartChange(); note('Корзина очищена'); });
+  $('#coForget').addEventListener('click', function () {
+    ['fName', 'fPhone', 'fRName', 'fRPhone', 'fAddr'].forEach(function (fid) { document.getElementById(fid).value = ''; });
+    form = {}; try { localStorage.removeItem(FORM_KEY); } catch (e) {}
+    note('Данные удалены с этого устройства');
+  });
 
   function buildMessage() {
     var W = T.wa, v = function (id) { return document.getElementById(id).value.trim(); };
@@ -614,44 +628,85 @@
     err.hidden = true;
     var text = buildMessage();
     track('order_prepared', { total: subtotal() + deliveryFee(), items: count(), payment: paymentMethod });
-    /* Completed website order: open the shop's exact Telegram chat and
-       prefill the order. Telegram officially supports phone links with text. */
-    var shopTelegram = '79165896600';
-    var sendUrl = 'https://t.me/+' + shopTelegram + '?text=' + encodeURIComponent(text);
+    /* Hand-off to the shop's Telegram chat. The site cannot send the message
+       itself: it opens the chat and copies the order text. Prefilling via
+       ?text= is documented for username links only, so on a phone link the
+       text may not appear — the customer pastes it. The order counts as
+       passed only after the customer confirms they sent it. */
+    pendingOrder = text;
+    copyText(text);
+    openTelegram(text);
     track('order_channel', { channel: 'TelegramOrder', payment: paymentMethod });
-    /* Mark the hand-off as completed before leaving the page. When the customer
-       returns from Telegram the old basket must not look like a pending order. */
-    cart = [];
-    saveCart();
-    onCartChange();
-    /* Keep name, phone, recipient and address for the next order. */
+    showSendState('prepared');
+  });
+
+  var SHOP_TG = (D.CHANNELS && D.CHANNELS.telegram) || '79165896600';
+  var pendingOrder = '';
+  function telegramUrl(text) {
+    return 'https://t.me/+' + SHOP_TG + (text ? '?text=' + encodeURIComponent(text) : '');
+  }
+  function openTelegram(text) {
+    var a = document.createElement('a');
+    a.href = telegramUrl(text); a.target = '_blank'; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  function sendBtn(label, cls, fn) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn ' + cls; b.textContent = label;
+    b.addEventListener('click', fn);
+    return b;
+  }
+  function showSendState(state) {
+    var box = $('#coSend'), btns = $('#coSendBtns');
+    box.hidden = false; btns.innerHTML = '';
+    if (state === 'prepared') {
+      $('#coSend .co-send-ttl').textContent = 'Заказ подготовлен. Отправьте его в Telegram';
+      $('#coSend .co-send-txt').textContent = 'Мы открыли чат магазина в Telegram и скопировали текст заказа. Если текст не появился в поле сообщения — вставьте его и нажмите «Отправить». Заказ будет передан, когда сообщение уйдёт.';
+      btns.appendChild(sendBtn('Я отправил заказ', 'btn-light', completeOrder));
+      btns.appendChild(sendBtn('Открыть Telegram ещё раз', 'btn-ghost', function () { pendingOrder = buildMessage(); copyText(pendingOrder); openTelegram(pendingOrder); }));
+      btns.appendChild(sendBtn('Скопировать текст заказа', 'btn-ghost', function () { pendingOrder = buildMessage(); copyText(pendingOrder); note('Текст заказа скопирован'); }));
+    } else {
+      $('#coSend .co-send-ttl').textContent = 'Заказ передан в Telegram';
+      $('#coSend .co-send-txt').textContent = 'Спасибо! Мы подтвердим наличие, доставку и оплату в Telegram.';
+    }
+    $('#waBtn').hidden = true;   // the panel carries the next step
+    box.scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
+  }
+  function completeOrder() {
+    track('order_sent_confirmed', { items: count() });
+    pendingOrder = '';
+    cart = []; onCartChange();
+    /* one-time fields reset; name, phones, recipient and address stay for next time */
     $('#fComment').value = '';
     $('#fConsent').checked = false;
     $('#fSurprise').checked = false;
-    $('#coSend').hidden = false;
-    var sentTitle = $('#coSend .co-send-ttl');
-    var sentText = $('#coSend .co-send-txt');
-    if (sentTitle) sentTitle.textContent = 'Заказ отправлен';
-    if (sentText) sentText.textContent = 'Заказ передан в Telegram. Мы подтвердим наличие, доставку и оплату.';
-    note('Заказ отправлен ✓');
-    window.location.href = sendUrl;
-  });
+    showSendState('done');
+    note('Заказ передан ✓');
+  }
+  function resetSendState() {
+    $('#coSend').hidden = true; $('#coSendBtns').innerHTML = ''; $('#waBtn').hidden = false; pendingOrder = '';
+  }
 
   function copyText(text) {
-    try { navigator.clipboard.writeText(text).catch(function () {}); } catch (e) {}
+    function legacy() {
+      var t = document.createElement('textarea');
+      t.value = text; t.setAttribute('readonly', ''); t.style.position = 'fixed'; t.style.opacity = '0';
+      document.body.appendChild(t); t.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      t.remove();
+    }
+    try { navigator.clipboard.writeText(text).catch(legacy); } catch (e) { legacy(); }
   }
 
   /* Bouquet choice: self-service catalog or Telegram sales assistant */
   (function () {
     var trigger = $('#chooseBouquetBtn'), sheet = $('#chooseSheet');
     if (!trigger || !sheet) return;
-    function closeChoose() { sheet.hidden = true; doc.classList.remove('sheet-open'); }
-    trigger.addEventListener('click', function () { sheet.hidden = false; doc.classList.add('sheet-open'); });
-    sheet.querySelectorAll('[data-choose-close]').forEach(function (x) { x.addEventListener('click', closeChoose); });
+    trigger.addEventListener('click', function (e) { e.preventDefault(); openSheet(sheet); });
     var self = $('#chooseSelf');
     if (self) self.addEventListener('click', function (e) {
-      e.preventDefault(); closeChoose();
-      setTimeout(function () { scrollToId('catalog'); }, 50);
+      e.preventDefault(); closeSheet(sheet);
+      setTimeout(function () { scrollToId('catalog'); }, reduced ? 220 : 580);
     });
   })();
 
@@ -771,7 +826,8 @@
   var opened = false;
 
   function openPage() {
-    if (opened) return; opened = true;
+    if (opened) { doc.classList.remove('intro-pending', 'intro-leaving'); doc.classList.add('intro-done'); return; }
+    opened = true;
     doc.classList.remove('intro-pending');
     doc.classList.add('intro-leaving');
     opening.classList.add('is-open');
@@ -792,15 +848,23 @@
   /* ======================================================================
      BOOT
      ====================================================================== */
-  $('#delNote').textContent = T.deliveryNote;
-  renderOccasions();
-  renderCollections();
-  renderFeatured();
-  renderCatbar();
-  renderGrid(false);
-  renderCombos();
-  renderReels();
-  onCartChange();
+  function safe(name, fn) {
+    try { fn(); } catch (e) { if (window.console) console.error('[sweety] ' + name + ':', e); }
+  }
+  safe('delivery note', function () { $('#delNote').textContent = T.deliveryNote; });
+  safe('occasions', renderOccasions);
+  safe('collections', renderCollections);
+  safe('featured', renderFeatured);
+  safe('catbar', renderCatbar);
+  safe('grid', function () { renderGrid(false); });
+  safe('combos', renderCombos);
+  safe('reels', renderReels);
+  safe('cart', onCartChange);
   window.LF_READY = true;
-  initOpening();
+  safe('opening', initOpening);
+  /* whatever happens above, the page ends up open and visible */
+  setTimeout(function () {
+    if (!doc.classList.contains('intro-done')) safe('open', openPage);
+    if (!revealsLive) safe('reveals', startReveals);
+  }, 3000);
 })();
