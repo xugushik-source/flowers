@@ -303,6 +303,15 @@
           </div>
 
           <div class="f"><label class="f-lbl" for="fComment">Комментарий</label><textarea class="f-inp" id="fComment" rows="2" placeholder="Цвет ленты, особые пожелания…"></textarea></div>
+          <div class="f">
+            <span class="f-lbl">Оплата</span>
+            <div class="seg pay-seg" role="radiogroup" aria-label="Способ оплаты">
+              <button type="button" class="seg-btn is-on" role="radio" aria-checked="true" data-pay="cash">Наличными</button>
+              <button type="button" class="seg-btn" role="radio" aria-checked="false" data-pay="card">Безналичная</button>
+              <button type="button" class="seg-btn" role="radio" aria-checked="false" data-pay="transfer">Перевод</button>
+            </div>
+            <p class="f-hint" id="payHint">Оплата наличными при получении. Детали подтвердит менеджер.</p>
+          </div>
 
           <label class="toggle">
             <input type="checkbox" id="fSurprise">
@@ -321,16 +330,15 @@
         </label>
         <p class="co-err" id="coErr" role="alert" hidden></p>
         <div class="co-send" id="coSend" hidden>
-          <p class="co-send-ttl">Заказ скопирован</p>
-          <p class="co-send-txt">Откройте чат и вставьте текст заказа. Мы подтвердим наличие, стоимость и доставку.</p>
+          <p class="co-send-ttl">Заказ готов к отправке</p>
+          <p class="co-send-txt">Нажмите кнопку ниже — Telegram откроется сразу с вашим заказом.</p>
           <div class="co-send-btns" id="coSendBtns"></div>
-          <textarea class="f-inp co-send-text" id="coSendText" rows="6" readonly aria-label="Текст заказа"></textarea>
         </div>
         <button class="co-clear" id="coClear" type="button">Очистить корзину</button>
       </div>
     </div>
     <div class="sheet-foot">
-      <button class="btn btn-wa btn-block" id="waBtn" type="button">Оформить заказ</button>
+      <button class="btn btn-wa btn-block" id="waBtn" type="button">Отправить заказ в Telegram</button>
     </div>
   </div>
 </div>
