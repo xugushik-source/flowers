@@ -612,10 +612,10 @@
     err.hidden = true;
     var text = buildMessage();
     track('order_prepared', { total: subtotal() + deliveryFee(), items: count(), payment: paymentMethod });
-    /* The website checkout is already complete: send the prepared order to
-       the shop's Telegram contact, not back through the sales bot. */
+    /* Completed website order: open the shop's exact Telegram chat and
+       prefill the order. Telegram officially supports phone links with text. */
     var shopTelegram = '79165896600';
-    var sendUrl = 'https://t.me/share/url?url=' + encodeURIComponent('https://xugushik-source.github.io/flowers/sweetybuket/') + '&text=' + encodeURIComponent(text);
+    var sendUrl = 'https://t.me/+' + shopTelegram + '?text=' + encodeURIComponent(text);
     track('order_channel', { channel: 'TelegramOrder', payment: paymentMethod });
     window.location.href = sendUrl;
   });
