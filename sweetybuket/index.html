@@ -103,7 +103,7 @@
         <span class="mask"><span class="mask-in" style="--d:340ms">говорить за вас.</span></span>
       </h1>
       <p class="hero-sub"><span class="mask"><span class="mask-in" style="--d:480ms">Заказы круглосуточно. Доставка по Москве и области.</span></span></p>
-      <a class="btn btn-light hero-cta" href="#occasions" data-nav="occasions">Выбрать букет</a>
+      <button class="btn btn-light hero-cta" id="chooseBouquetBtn" type="button">Выбрать букет</button>
     </div>
   </section>
 
@@ -339,6 +339,21 @@
     </div>
     <div class="sheet-foot">
       <button class="btn btn-wa btn-block" id="waBtn" type="button">Отправить заказ в Telegram</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-wrap" id="chooseSheet" hidden>
+  <div class="sheet-ov" data-choose-close></div>
+  <div class="sheet choose-sheet" role="dialog" aria-modal="true" aria-labelledby="chooseTtl">
+    <button class="sheet-x" type="button" data-choose-close aria-label="Закрыть">×</button>
+    <div class="co-body">
+      <h2 class="co-ttl" id="chooseTtl">Как хотите выбрать букет?</h2>
+      <p class="lead">Можно посмотреть каталог самостоятельно или попросить помощника подобрать варианты под повод и бюджет.</p>
+      <div class="choose-actions">
+        <a class="btn btn-light btn-block" href="#catalog" id="chooseSelf">Выбрать самому</a>
+        <a class="btn btn-ghost btn-block" href="https://t.me/Sweety_Buket_Bot?start=assistant" target="_blank" rel="noopener">Выбрать с помощником</a>
+      </div>
     </div>
   </div>
 </div>
