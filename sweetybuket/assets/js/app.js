@@ -617,6 +617,22 @@
     var shopTelegram = '79165896600';
     var sendUrl = 'https://t.me/+' + shopTelegram + '?text=' + encodeURIComponent(text);
     track('order_channel', { channel: 'TelegramOrder', payment: paymentMethod });
+    /* Mark the hand-off as completed before leaving the page. When the customer
+       returns from Telegram the old basket must not look like a pending order. */
+    cart = [];
+    saveCart();
+    onCartChange();
+    try { localStorage.removeItem(FORM_KEY); } catch (e) {}
+    $('.fields input, .fields textarea').forEach(function (field) {
+      if (field.type === 'checkbox') field.checked = false;
+      else field.value = '';
+    });
+    $('#coSend').hidden = false;
+    var sentTitle = $('#coSend .co-send-ttl');
+    var sentText = $('#coSend .co-send-txt');
+    if (sentTitle) sentTitle.textContent = 'Заказ отправлен';
+    if (sentText) sentText.textContent = 'Заказ передан в Telegram. Мы подтвердим наличие, доставку и оплату.';
+    note('Заказ отправлен ✓');
     window.location.href = sendUrl;
   });
 
