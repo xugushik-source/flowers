@@ -1,4 +1,4 @@
-# PHOTO-AUDIT — Sweety Buket
+# PHOTO-AUDIT — SweetyBuket
 
 Источник всех фото: Instagram @sweetybuket, выгрузка через подключённый аккаунт (500 последних постов, 2023-12 … 2026-09). Отбор по лайкам и качеству кадра.
 Оригиналы лежат без изменений в `sweetybuket/originals/` (имя → исходный файл в `originals/SOURCES.json`).

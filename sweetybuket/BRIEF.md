@@ -1,4 +1,4 @@
-# Бриф для Sweety Buket
+# Бриф для SweetyBuket
 
 Сайт: https://xugushik-source.github.io/flowers/sweetybuket/
 

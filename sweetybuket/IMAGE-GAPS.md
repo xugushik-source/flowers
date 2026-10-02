@@ -1,4 +1,4 @@
-# IMAGE-GAPS — Sweety Buket
+# IMAGE-GAPS — SweetyBuket
 
 Чего не хватает в доступном материале (заменить, когда появятся съёмки):
 
