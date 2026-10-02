@@ -772,7 +772,6 @@
 
   function openPage() {
     if (opened) return; opened = true;
-    try { sessionStorage.setItem('sb_intro', '1'); } catch (e) {}
     doc.classList.remove('intro-pending');
     doc.classList.add('intro-leaving');
     opening.classList.add('is-open');
