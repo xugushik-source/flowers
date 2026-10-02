@@ -1,5 +1,4 @@
 import http from 'node:http';
-import fs from 'node:fs/promises';
 import { byId, products, money } from './catalog.js';
 
 const TOKEN=process.env.TELEGRAM_BOT_TOKEN;
@@ -8,7 +7,7 @@ const PAYMENT_URL=process.env.PAYMENT_URL || '';
 if(!TOKEN) throw new Error('TELEGRAM_BOT_TOKEN is required');
 const API='https://api.telegram.org/bot'+TOKEN;
 const SITE='https://xugushik-source.github.io/flowers/sweetybuket/';
-const IMG_DIR=new URL('../../sweetybuket/assets/optimized/', import.meta.url);
+const IMG='https://xugushik-source.github.io/flowers/sweetybuket/assets/optimized/';
 const sessions=new Map();
 const reply=(rows)=>({keyboard:rows.map(r=>r.map(text=>({text}))),resize_keyboard:true});
 const inline=(rows)=>({inline_keyboard:rows});
@@ -16,7 +15,10 @@ const btn=(text,data)=>({text,callback_data:data});
 async function api(method,body={}){const r=await fetch(API+'/'+method,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!j.ok) throw new Error(method+': '+j.description);return j.result;}
 const send=(chat,text,reply_markup)=>api('sendMessage',{chat_id:chat,text,reply_markup});
 async function photo(chat,p,markup){
- const bytes=await fs.readFile(new URL(p.id+'-card-800.jpg',IMG_DIR));
+ const imageUrl=IMG+p.id+'-card-800.jpg';
+ const ir=await fetch(imageUrl);
+ if(!ir.ok) throw new Error('imageFetch '+p.id+': HTTP '+ir.status);
+ const bytes=await ir.arrayBuffer();
  const form=new FormData();
  form.set('chat_id',String(chat));
  form.set('caption','🌷 '+p.name+'\n'+money(p.price));
@@ -24,7 +26,7 @@ async function photo(chat,p,markup){
  form.set('photo',new Blob([bytes],{type:'image/jpeg'}),p.id+'.jpg');
  const r=await fetch(API+'/sendPhoto',{method:'POST',body:form});
  const j=await r.json();
- if(!j.ok) throw new Error('sendPhoto: '+j.description);
+ if(!j.ok) throw new Error('sendPhoto '+p.id+': '+j.description);
  return j.result;
 }
 function fresh(p=null){return {product:p,step:p?'date':'',date:'',slot:'',delivery:'',address:'',recipient:'',customer:'',phone:'',card:'',surprise:false};}
@@ -36,8 +38,11 @@ function home(chat){sessions.delete(chat);return send(chat,'🌷 Sweety Buket\n\
 ]));}
 function categoryName(c){return ({roses:'Розы',pions:'Пионы',mono:'Монобукеты',author:'Авторские',box:'Коробки',baskets:'Корзины',sweets:'Клубника',combo:'Цветы + клубника'})[c]||c;}
 async function showList(chat,list,title){
- await send(chat,title);
- for(const p of list.slice(0,6)) await photo(chat,p,inline([[btn('❤️ Хочу этот','product:'+p.id),btn('Похожие','similar:'+p.id)]]));
+ console.log('SHOW_LIST',chat,title,'count='+list.length);
+ await send(chat,title+'\n\nСейчас покажу варианты карточками ниже 👇');
+ let shown=0;
+ for(const p of list.slice(0,6)){try{await photo(chat,p,inline([[btn('❤️ Хочу этот','product:'+p.id),btn('Похожие','similar:'+p.id)]]));shown++;console.log('PHOTO_OK',p.id);}catch(e){console.error('PHOTO_FAIL',p.id,e.message);}}
+ if(!shown) return send(chat,'⚠️ Карточки сейчас не загрузились. Я уже вижу эту ошибку в журнале. Вернитесь в меню и попробуйте ещё раз чуть позже.',inline([[btn('🏠 Главное меню','home')]]));
  return send(chat,'Выше — варианты из этой подборки. Можно выбрать любой кнопкой «❤️ Хочу этот» или продолжить поиск:',inline([[btn('Показать по другому бюджету','budgets'),btn('Другие категории','cats')],[btn('🏠 Главное меню','home')]]));
 }
 function filteredBudget(max,min=0){return products.filter(p=>p.price>min&&p.price<=max).sort((a,b)=>a.price-b.price);}
