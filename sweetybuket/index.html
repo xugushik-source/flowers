@@ -12,14 +12,16 @@
 <meta property="og:title" content="Sweety Buket — позвольте цветам говорить за вас">
 <meta property="og:description" content="Цветы и клубника в шоколаде с доставкой по Москве. Заказ в WhatsApp.">
 <meta property="og:url" content="https://xugushik-source.github.io/flowers/sweetybuket/">
-<meta property="og:image" content="https://xugushik-source.github.io/flowers/sweetybuket/assets/video/reel2.jpg">
+<meta property="og:image" content="https://xugushik-source.github.io/flowers/sweetybuket/assets/optimized/hero-d-1300.jpg">
 <meta property="og:locale" content="ru_RU">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23140E11'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' font-style='italic' text-anchor='middle' fill='%23D9A3AE'%3ESB%3C/text%3E%3C/svg%3E">
-<link rel="preload" as="image" href="assets/video/reel2.webp" fetchpriority="high">
+<link rel="preload" as="image" type="image/avif" media="(max-width: 899px)" imagesrcset="assets/optimized/hero-m-640.avif 640w, assets/optimized/hero-m-960.avif 960w, assets/optimized/hero-m-1280.avif 1280w" imagesizes="100vw" fetchpriority="high">
+<link rel="preload" as="image" type="image/avif" media="(min-width: 900px)" imagesrcset="assets/optimized/hero-d-900.avif 900w, assets/optimized/hero-d-1300.avif 1300w, assets/optimized/hero-d-1800.avif 1800w" imagesizes="55vw" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/sweety.css">
 <script>
   /* Splash runs once per browser session; JS-only so the page works without it. */
   (function () {
@@ -44,29 +46,25 @@
 
 <a class="skip" href="#catalog">К каталогу</a>
 
-<!-- ============ SPLASH ============ -->
-<section class="splash" id="splash" aria-label="Sweety Buket">
-  <div class="splash-bg">
-    <video autoplay muted loop playsinline preload="auto" poster="assets/video/reel2.jpg" aria-hidden="true">
-      <source src="assets/video/reel2.mp4" type="video/mp4">
-    </video>
+<!-- ============ OPENING: two wine panels part to reveal the hero ============ -->
+<div class="opening" id="opening" aria-hidden="true">
+  <div class="op-panel op-l"></div>
+  <div class="op-panel op-r"></div>
+  <div class="op-mark">
+    <span class="op-line"></span>
+    <span class="op-name"><span class="mask"><span class="mask-in">Sweety Buket</span></span></span>
+    <span class="op-sub"><span class="mask"><span class="mask-in">Москва</span></span></span>
   </div>
-  <div class="splash-shade"></div>
-  <div class="splash-inner">
-    <h1 class="splash-logo">
-      <span class="mask"><span class="mask-in" style="--d:0ms">Sweety</span></span>
-      <span class="mask"><span class="mask-in" style="--d:120ms">Buket</span></span>
-    </h1>
-    <p class="splash-tag"><span class="mask"><span class="mask-in" style="--d:570ms">Цветы · Клубника · Москва</span></span></p>
-    <p class="splash-line"><span class="mask"><span class="mask-in" style="--d:970ms">Позвольте цветам говорить за вас</span></span></p>
-    <button class="btn btn-light splash-cta" id="splashCta" type="button">Выбрать букет</button>
-  </div>
-  <div class="splash-progress" aria-hidden="true"><span></span></div>
-</section>
+</div>
 
 <!-- ============ HEADER ============ -->
-<header class="hdr" id="hdr">
+<header class="hdr is-over" id="hdr">
   <a class="hdr-logo" href="#top" data-nav="top">Sweety Buket</a>
+  <nav class="hdr-nav" aria-label="Основные разделы">
+    <a href="#catalog" data-nav="catalog">Букеты</a>
+    <a href="#gifts" data-nav="gifts">Цветы + клубника</a>
+    <a href="#delivery" data-nav="delivery">Доставка</a>
+  </nav>
   <div class="hdr-right">
     <button class="hdr-cart" id="hdrCart" type="button" aria-label="Корзина" hidden>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
@@ -79,12 +77,12 @@
   </div>
 </header>
 
-<!-- ============ MENU ============ -->
 <div class="menu" id="menu" hidden>
   <nav class="menu-nav" aria-label="Разделы">
-    <a href="#collections" data-nav="collections"><span>Коллекции</span></a>
+    <a href="#occasions" data-nav="occasions"><span>Повод</span></a>
     <a href="#catalog" data-nav="catalog"><span>Букеты</span></a>
-    <a href="#gifts" data-nav="gifts"><span>Видео</span></a>
+    <a href="#gifts" data-nav="gifts"><span>Цветы + клубника</span></a>
+    <a href="#reels" data-nav="reels"><span>Видео</span></a>
     <a href="#delivery" data-nav="delivery"><span>Доставка</span></a>
     <a href="#contacts" data-nav="contacts"><span>Контакты</span></a>
   </nav>
@@ -97,39 +95,62 @@
 
 <main id="top" class="main">
 
-  <p class="promo">Заказы круглосуточно · Доставка по Москве и МО</p>
+  <!-- ============ HERO: photo decides the layout ============ -->
+  <section class="hero" aria-labelledby="heroTtl">
+    <div class="hero-media"><picture class="hero-pic"><source media="(min-width: 900px)" type="image/avif" srcset="assets/optimized/hero-d-900.avif 900w, assets/optimized/hero-d-1300.avif 1300w, assets/optimized/hero-d-1800.avif 1800w" sizes="55vw"><source media="(min-width: 900px)" type="image/webp" srcset="assets/optimized/hero-d-900.webp 900w, assets/optimized/hero-d-1300.webp 1300w, assets/optimized/hero-d-1800.webp 1800w" sizes="55vw"><source media="(min-width: 900px)" srcset="assets/optimized/hero-d-900.jpg 900w, assets/optimized/hero-d-1300.jpg 1300w, assets/optimized/hero-d-1800.jpg 1800w" sizes="55vw"><source type="image/avif" srcset="assets/optimized/hero-m-640.avif 640w, assets/optimized/hero-m-960.avif 960w, assets/optimized/hero-m-1280.avif 1280w, assets/optimized/hero-m-1600.avif 1600w" sizes="100vw"><source type="image/webp" srcset="assets/optimized/hero-m-640.webp 640w, assets/optimized/hero-m-960.webp 960w, assets/optimized/hero-m-1280.webp 1280w, assets/optimized/hero-m-1600.webp 1600w" sizes="100vw"><img src="assets/optimized/hero-m-960.jpg" srcset="assets/optimized/hero-m-640.jpg 640w, assets/optimized/hero-m-960.jpg 960w, assets/optimized/hero-m-1280.jpg 1280w, assets/optimized/hero-m-1600.jpg 1600w" sizes="100vw" alt="Девушка с букетом из 51 розового пиона" width="1200" height="1600" fetchpriority="high" decoding="async"></picture></div>
+    <div class="hero-text">
+      <p class="hero-eyebrow"><span class="mask"><span class="mask-in" style="--d:0ms">Цветы · Клубника в шоколаде · Москва</span></span></p>
+      <h1 class="hero-ttl" id="heroTtl">
+        <span class="hero-brand"><span class="mask"><span class="mask-in" style="--d:80ms">Sweety Buket</span></span></span>
+        <span class="mask"><span class="mask-in" style="--d:220ms">Позвольте цветам</span></span>
+        <span class="mask"><span class="mask-in" style="--d:340ms">говорить за вас.</span></span>
+      </h1>
+      <p class="hero-sub"><span class="mask"><span class="mask-in" style="--d:480ms">Заказы круглосуточно. Доставка по Москве и области.</span></span></p>
+      <a class="btn btn-light hero-cta" href="#occasions" data-nav="occasions">Выбрать букет</a>
+    </div>
+  </section>
 
   <!-- ============ OCCASIONS ============ -->
   <section class="sec sec-occasions" id="occasions" aria-labelledby="occTtl">
     <div class="sec-head">
       <h2 class="h-xl" id="occTtl" data-reveal-text>Для какого момента?</h2>
-      <p class="lead" data-reveal>Найдите цветы для нужного чувства.</p>
+      <p class="lead" data-reveal>Выберите повод — покажем подходящие букеты.</p>
     </div>
     <div class="occ-grid" id="occGrid"></div>
   </section>
 
-  <!-- ============ COLLECTIONS ============ -->
-  <section class="sec sec-collections" id="collections" aria-labelledby="colTtl">
-    <div class="sec-head">
-      <p class="eyebrow" data-reveal>Sweety Buket</p>
-      <h2 class="h-xl" id="colTtl" data-reveal-text>Коллекции</h2>
-    </div>
-    <div class="col-grid" id="colGrid"></div>
-  </section>
-
-  <!-- ============ FEATURED ============ -->
+  <!-- ============ SIGNATURE ============ -->
   <section class="sec sec-featured" id="featured" aria-labelledby="featTtl">
-    <div class="sec-head">
-      <p class="eyebrow" data-reveal>Любимое подписчиков</p>
-      <h2 class="h-xl" id="featTtl" data-reveal-text>Хиты Sweety</h2>
+    <div class="sec-head sec-head-row">
+      <h2 class="h-xl" id="featTtl" data-reveal-text>Любимые букеты</h2>
+      <p class="lead" data-reveal>По реакции подписчиков в Instagram.</p>
     </div>
     <div class="feat-grid" id="featGrid"></div>
+  </section>
+
+  <!-- ============ BRAND IMAGE ============ -->
+  <section class="brand-band" aria-label="Корзины Sweety Buket">
+    <div class="brand-media" data-reveal-img><picture class="brand-pic"><source media="(min-width: 768px)" type="image/avif" srcset="assets/optimized/brand-d-1000.avif 1000w, assets/optimized/brand-d-1440.avif 1440w" sizes="(min-width: 1600px) 1440px, 100vw"><source media="(min-width: 768px)" type="image/webp" srcset="assets/optimized/brand-d-1000.webp 1000w, assets/optimized/brand-d-1440.webp 1440w" sizes="(min-width: 1600px) 1440px, 100vw"><source media="(min-width: 768px)" srcset="assets/optimized/brand-d-1000.jpg 1000w, assets/optimized/brand-d-1440.jpg 1440w" sizes="(min-width: 1600px) 1440px, 100vw"><source type="image/avif" srcset="assets/optimized/brand-m-600.avif 600w, assets/optimized/brand-m-900.avif 900w" sizes="100vw"><source type="image/webp" srcset="assets/optimized/brand-m-600.webp 600w, assets/optimized/brand-m-900.webp 900w" sizes="100vw"><img src="assets/optimized/brand-m-900.jpg" srcset="assets/optimized/brand-m-600.jpg 600w, assets/optimized/brand-m-900.jpg 900w" sizes="100vw" alt="Две большие корзины с розовыми розами и пионами" width="1440" height="810" loading="lazy" decoding="async"></picture></div>
+    <p class="brand-line" data-reveal>«Необъятные корзины»</p>
+  </section>
+
+  <!-- ============ FLOWERS + STRAWBERRIES ============ -->
+  <section class="sec sec-gifts" id="gifts" aria-labelledby="giftTtl">
+    <div class="gift-lead">
+      <div class="gift-lead-media" data-reveal-img><picture><source type="image/avif" srcset="assets/optimized/gift-lead-v-600.avif 600w, assets/optimized/gift-lead-v-1000.avif 1000w, assets/optimized/gift-lead-v-1400.avif 1400w" sizes="(min-width: 900px) 42vw, 100vw"><source type="image/webp" srcset="assets/optimized/gift-lead-v-600.webp 600w, assets/optimized/gift-lead-v-1000.webp 1000w, assets/optimized/gift-lead-v-1400.webp 1400w" sizes="(min-width: 900px) 42vw, 100vw"><img src="assets/optimized/gift-lead-v-1000.jpg" srcset="assets/optimized/gift-lead-v-600.jpg 600w, assets/optimized/gift-lead-v-1000.jpg 1000w, assets/optimized/gift-lead-v-1400.jpg 1400w" sizes="(min-width: 900px) 42vw, 100vw" alt="Букет из эустомы и сердце из клубники в шоколаде" width="1000" height="1333" loading="lazy" decoding="async"></picture></div>
+      <div class="gift-lead-text">
+        <p class="eyebrow" data-reveal>Подарок целиком</p>
+        <h2 class="h-xl" id="giftTtl" data-reveal-text>Цветы<br>и клубника<br>в шоколаде</h2>
+        <p class="lead" data-reveal>Букет и сладкий подарок в одном заказе. Состав и наполнение подберём под ваш повод.</p>
+      </div>
+    </div>
+    <div class="gift-grid" id="giftGrid"></div>
   </section>
 
   <!-- ============ CATALOG ============ -->
   <section class="sec sec-catalog" id="catalog" aria-labelledby="catTtl">
     <div class="sec-head">
-      <h2 class="h-xl" id="catTtl" data-reveal-text>Коллекция цветов</h2>
+      <h2 class="h-xl" id="catTtl" data-reveal-text>Все букеты</h2>
     </div>
     <div class="catbar" id="catbar">
       <div class="catbar-scroll" id="catbarScroll" role="tablist" aria-label="Категории"></div>
@@ -138,28 +159,23 @@
     <div class="grid" id="grid" aria-live="polite"></div>
   </section>
 
-  <!-- ============ STORY ============ -->
-  <section class="story" id="story" aria-labelledby="storyTtl">
-    <div class="story-img" data-reveal-img>
-      <picture>
-        <source srcset="assets/occasions/her.webp" type="image/webp">
-        <img src="assets/occasions/her.jpg" alt="Букет из 51 пиона" loading="lazy" decoding="async" width="900" height="1125">
-      </picture>
+  <!-- ============ EDITORIAL STORY ============ -->
+  <section class="story2" aria-labelledby="storyTtl">
+    <div class="st-a" data-reveal-img><picture><source type="image/avif" srcset="assets/optimized/story-basket-v-600.avif 600w, assets/optimized/story-basket-v-1000.avif 1000w, assets/optimized/story-basket-v-1400.avif 1400w" sizes="(min-width: 900px) 40vw, 100vw"><source type="image/webp" srcset="assets/optimized/story-basket-v-600.webp 600w, assets/optimized/story-basket-v-1000.webp 1000w, assets/optimized/story-basket-v-1400.webp 1400w" sizes="(min-width: 900px) 40vw, 100vw"><img src="assets/optimized/story-basket-v-1000.jpg" srcset="assets/optimized/story-basket-v-600.jpg 600w, assets/optimized/story-basket-v-1000.jpg 1000w, assets/optimized/story-basket-v-1400.jpg 1400w" sizes="(min-width: 900px) 40vw, 100vw" alt="Девушка с весенней корзиной цветов" width="1000" height="1333" loading="lazy" decoding="async"></picture></div>
+    <div class="st-text">
+      <h2 class="h-xl" id="storyTtl" data-reveal-text>Индивидуальность<br>— наш почерк</h2>
+      <p class="lead" data-reveal>Любовь, трепет, душа вложены в каждую композицию.</p>
     </div>
-    <div class="story-text">
-      <h2 class="h-xl" id="storyTtl" data-reveal-text>Позвольте цветам<br>говорить<br>за вас.</h2>
-      <p class="lead" data-reveal>Принимаем заказы круглосуточно и бережно доставляем по Москве и Московской области.</p>
-    </div>
+    <div class="st-b" data-reveal-img><picture><source type="image/avif" srcset="assets/optimized/story-two-v-600.avif 600w, assets/optimized/story-two-v-1000.avif 1000w, assets/optimized/story-two-v-1400.avif 1400w" sizes="(min-width: 900px) 30vw, 70vw"><source type="image/webp" srcset="assets/optimized/story-two-v-600.webp 600w, assets/optimized/story-two-v-1000.webp 1000w, assets/optimized/story-two-v-1400.webp 1400w" sizes="(min-width: 900px) 30vw, 70vw"><img src="assets/optimized/story-two-v-1000.jpg" srcset="assets/optimized/story-two-v-600.jpg 600w, assets/optimized/story-two-v-1000.jpg 1000w, assets/optimized/story-two-v-1400.jpg 1400w" sizes="(min-width: 900px) 30vw, 70vw" alt="Девушка с двумя букетами" width="1000" height="1250" loading="lazy" decoding="async"></picture></div>
+    <div class="st-c" data-reveal-img><picture><source type="image/avif" srcset="assets/optimized/story-tulips-v-600.avif 600w, assets/optimized/story-tulips-v-1000.avif 1000w" sizes="(min-width: 900px) 24vw, 56vw"><source type="image/webp" srcset="assets/optimized/story-tulips-v-600.webp 600w, assets/optimized/story-tulips-v-1000.webp 1000w" sizes="(min-width: 900px) 24vw, 56vw"><img src="assets/optimized/story-tulips-v-1000.jpg" srcset="assets/optimized/story-tulips-v-600.jpg 600w, assets/optimized/story-tulips-v-1000.jpg 1000w" sizes="(min-width: 900px) 24vw, 56vw" alt="Букет розовых тюльпанов" width="1000" height="1250" loading="lazy" decoding="async"></picture></div>
   </section>
 
   <!-- ============ REELS ============ -->
-  <section class="sec sec-reels" id="gifts" aria-labelledby="reelTtl">
+  <section class="sec sec-reels" id="reels" aria-labelledby="reelTtl">
     <div class="sec-head">
-      <p class="eyebrow" data-reveal>Instagram @sweetybuket</p>
       <h2 class="h-xl" id="reelTtl" data-reveal-text>Букеты в движении</h2>
     </div>
-    <div class="reels" id="reels"></div>
-    <a class="btn btn-ghost reels-more" href="https://www.instagram.com/sweetybuket/" target="_blank" rel="noopener">Больше в Instagram</a>
+    <div class="reels" id="reelBox"></div>
   </section>
 
   <!-- ============ DELIVERY ============ -->
@@ -176,18 +192,26 @@
     <p class="del-note" data-reveal id="delNote"></p>
   </section>
 
+  <!-- ============ INSTAGRAM ============ -->
+  <section class="sec sec-ig" aria-labelledby="igTtl">
+    <div class="sec-head sec-head-row">
+      <h2 class="h-xl" id="igTtl" data-reveal-text>@sweetybuket</h2>
+      <a class="btn btn-ghost" href="https://www.instagram.com/sweetybuket/" target="_blank" rel="noopener">Больше в Instagram</a>
+    </div>
+    <div class="ig-grid" data-stagger><a class="ig-tile" href="https://www.instagram.com/sweetybuket/" target="_blank" rel="noopener" aria-label="Открыть Instagram @sweetybuket"><picture><source type="image/avif" srcset="assets/optimized/ig-1-sq-400.avif 400w, assets/optimized/ig-1-sq-700.avif 700w" sizes="(min-width: 768px) 16vw, 33vw"><source type="image/webp" srcset="assets/optimized/ig-1-sq-400.webp 400w, assets/optimized/ig-1-sq-700.webp 700w" sizes="(min-width: 768px) 16vw, 33vw"><img src="assets/optimized/ig-1-sq-700.jpg" srcset="assets/optimized/ig-1-sq-400.jpg 400w, assets/optimized/ig-1-sq-700.jpg 700w" sizes="(min-width: 768px) 16vw, 33vw" alt="" width="700" height="700" loading="lazy" decoding="async"></picture></a><a class="ig-tile" href="https://www.instagram.com/sweetybuket/" target="_blank" rel="noopener" aria-label="Открыть Instagram @sweetybuket"><picture><source type="image/avif" srcset="assets/optimized/ig-2-sq-400.avif 400w, assets/optimized/ig-2-sq-700.avif 700w" sizes="(min-width: 768px) 16vw, 33vw"><source type="image/webp" srcset="assets/optimized/ig-2-sq-400.webp 400w, assets/optimized/ig-2-sq-700.webp 700w" sizes="(min-width: 768px) 16vw, 33vw"><img src="assets/optimized/ig-2-sq-700.jpg" srcset="assets/optimized/ig-2-sq-400.jpg 400w, assets/optimized/ig-2-sq-700.jpg 700w" sizes="(min-width: 768px) 16vw, 33vw" alt="" width="700" height="700" loading="lazy" decoding="async"></picture></a><a class="ig-tile" href="https://www.instagram.com/sweetybuket/" target="_blank" rel="noopener" aria-label="Открыть Instagram @sweetybuket"><picture><source type="image/avif" srcset="assets/optimized/ig-3-sq-400.avif 400w, assets/optimized/ig-3-sq-700.avif 700w" sizes="(min-width: 768px) 16vw, 33vw"><source type="image/webp" srcset="assets/optimized/ig-3-sq-400.webp 400w, assets/optimized/ig-3-sq-700.webp 700w" sizes="(min-width: 768px) 16vw, 33vw"><img src="assets/optimized/ig-3-sq-700.jpg" srcset="assets/optimized/ig-3-sq-400.jpg 400w, assets/optimized/ig-3-sq-700.jpg 700w" sizes="(min-width: 768px) 16vw, 33vw" alt="" width="700" height="700" loading="lazy" decoding="async"></picture></a><a class="ig-tile" href="https://www.instagram.com/sweetybuket/" target="_blank" rel="noopener" aria-label="Открыть Instagram @sweetybuket"><picture><source type="image/avif" srcset="assets/optimized/ig-4-sq-400.avif 400w, assets/optimized/ig-4-sq-700.avif 700w" sizes="(min-width: 768px) 16vw, 33vw"><source type="image/webp" srcset="assets/optimized/ig-4-sq-400.webp 400w, assets/optimized/ig-4-sq-700.webp 700w" sizes="(min-width: 768px) 16vw, 33vw"><img src="assets/optimized/ig-4-sq-700.jpg" srcset="assets/optimized/ig-4-sq-400.jpg 400w, assets/optimized/ig-4-sq-700.jpg 700w" sizes="(min-width: 768px) 16vw, 33vw" alt="" width="700" height="700" loading="lazy" decoding="async"></picture></a><a class="ig-tile" href="https://www.instagram.com/sweetybuket/" target="_blank" rel="noopener" aria-label="Открыть Instagram @sweetybuket"><picture><source type="image/avif" srcset="assets/optimized/ig-5-sq-400.avif 400w, assets/optimized/ig-5-sq-700.avif 700w" sizes="(min-width: 768px) 16vw, 33vw"><source type="image/webp" srcset="assets/optimized/ig-5-sq-400.webp 400w, assets/optimized/ig-5-sq-700.webp 700w" sizes="(min-width: 768px) 16vw, 33vw"><img src="assets/optimized/ig-5-sq-700.jpg" srcset="assets/optimized/ig-5-sq-400.jpg 400w, assets/optimized/ig-5-sq-700.jpg 700w" sizes="(min-width: 768px) 16vw, 33vw" alt="" width="700" height="700" loading="lazy" decoding="async"></picture></a><a class="ig-tile" href="https://www.instagram.com/sweetybuket/" target="_blank" rel="noopener" aria-label="Открыть Instagram @sweetybuket"><picture><source type="image/avif" srcset="assets/optimized/ig-6-sq-400.avif 400w, assets/optimized/ig-6-sq-700.avif 700w" sizes="(min-width: 768px) 16vw, 33vw"><source type="image/webp" srcset="assets/optimized/ig-6-sq-400.webp 400w, assets/optimized/ig-6-sq-700.webp 700w" sizes="(min-width: 768px) 16vw, 33vw"><img src="assets/optimized/ig-6-sq-700.jpg" srcset="assets/optimized/ig-6-sq-400.jpg 400w, assets/optimized/ig-6-sq-700.jpg 700w" sizes="(min-width: 768px) 16vw, 33vw" alt="" width="700" height="700" loading="lazy" decoding="async"></picture></a></div>
+  </section>
+
 </main>
 
-<!-- ============ FOOTER ============ -->
 <footer class="ftr" id="contacts">
   <div class="ftr-logo">Sweety Buket</div>
   <p class="ftr-line">Цветы и клубника в шоколаде · Москва и МО</p>
   <p class="ftr-line">Заказы принимаем круглосуточно</p>
   <div class="ftr-links">
     <a data-wa-link href="#" target="_blank" rel="noopener">WhatsApp</a>
+    <a href="https://t.me/+79165896600" target="_blank" rel="noopener">Telegram</a>
     <a href="tel:+79165896600">+7 916 589-66-00</a>
     <a href="tel:+79153735330">+7 915 373-53-30</a>
-    <a href="https://t.me/+79165896600" target="_blank" rel="noopener">Telegram</a>
     <a href="https://www.instagram.com/sweetybuket/" target="_blank" rel="noopener">Instagram</a>
   </div>
   <p class="ftr-copy">© Sweety Buket</p>
@@ -207,7 +231,7 @@
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="psName">
     <button class="sheet-x" type="button" data-close aria-label="Закрыть">×</button>
     <div class="sheet-scroll">
-      <div class="ps-img"><img id="psImg" alt=""></div>
+      <div class="ps-img"><picture><source id="psSrcAvif" type="image/avif"><source id="psSrcWebp" type="image/webp"><img id="psImg" alt="" width="1200" height="1500"></picture></div>
       <div class="ps-body">
         <p class="ps-no" id="psNo"></p>
         <h2 class="ps-name" id="psName"></h2>
@@ -300,6 +324,7 @@
 
 <div class="note" id="note" role="status" aria-live="polite"></div>
 
+<script src="assets/js/images.js"></script>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
