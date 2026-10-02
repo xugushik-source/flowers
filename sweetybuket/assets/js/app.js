@@ -28,7 +28,7 @@
     get: function (k, def) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; } },
     set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
-  var CART_KEY = 'sb_cart_v1', FORM_KEY = 'sb_checkout_v1';
+  var CART_KEY = 'sb_cart_v1', FORM_KEY = 'sb_checkout_v2';
 
   /* ---------- lookups ---------- */
   var byId = {};
@@ -259,7 +259,7 @@
         var e = el('div', 'empty', '<p>' + (emptyCat ? T.emptyCategory : T.emptyFilter) + '</p>');
         if (emptyCat) {
           var wa = el('a', 'btn btn-primary', T.writeUs);
-          wa.href = 'https://wa.me/' + D.WHATSAPP; wa.target = '_blank'; wa.rel = 'noopener';
+          wa.href = 'https://t.me/+' + D.CHANNELS.telegram; wa.target = '_blank'; wa.rel = 'noopener';
           e.appendChild(wa);
         }
         var b = el('button', 'btn btn-ghost', T.showAll); b.type = 'button';
@@ -459,24 +459,21 @@
   /* ======================================================================
      CHECKOUT
      ====================================================================== */
-  var form = store.get(FORM_KEY, {});
+  /* Personal data (names, phones, address, comment) is NOT kept in browser
+     storage: only the delivery mode is remembered. Older drafts are wiped. */
+  var form = { mode: (store.get(FORM_KEY, {}) || {}).mode };
+  try { localStorage.removeItem('sb_checkout_v1'); } catch (e) {}
+  store.set('sb_checkout_v2', { mode: form.mode });
   var co = { mode: form.mode === 'p' ? 'p' : 'd', day: 0, slot: '' };
-  var FIELDS = { fName: 'name', fPhone: 'phone', fRName: 'rname', fRPhone: 'rphone', fAddr: 'addr', fComment: 'comment' };
-  Object.keys(FIELDS).forEach(function (fid) {
-    var inp = document.getElementById(fid);
-    if (form[FIELDS[fid]]) inp.value = form[FIELDS[fid]];
-    inp.addEventListener('input', function () {
-      form[FIELDS[fid]] = inp.value; store.set(FORM_KEY, form);
-      inp.classList.remove('is-invalid');
-    });
+  ['fName', 'fPhone', 'fRName', 'fRPhone', 'fAddr', 'fComment'].forEach(function (fid) {
+    document.getElementById(fid).addEventListener('input', function () { this.classList.remove('is-invalid'); });
   });
-  $('#fSurprise').checked = !!form.surprise;
-  $('#fSurprise').addEventListener('change', function () { form.surprise = this.checked; store.set(FORM_KEY, form); });
+  $('#fConsent').addEventListener('change', function () { if (this.checked) $('#coErr').hidden = true; });
 
   function deliveryFee() { return !!D.DELIVERY && co.mode === 'd' && subtotal() > 0 && subtotal() < D.DELIVERY.freeFrom ? D.DELIVERY.fee : 0; }
 
   function setMode(m) {
-    co.mode = m; form.mode = m; store.set(FORM_KEY, form);
+    co.mode = m; form.mode = m; store.set(FORM_KEY, { mode: m });
     $('#modeD').setAttribute('aria-checked', m === 'd' ? 'true' : 'false');
     $('#modeP').setAttribute('aria-checked', m === 'p' ? 'true' : 'false');
     $('#fAddrWrap').hidden = m !== 'd';
@@ -594,14 +591,38 @@
       setTimeout(function () { f.focus({ preventScroll: true }); }, 350);
       return;
     }
+    if (!$('#fConsent').checked) {
+      err.textContent = T.errConsent; err.hidden = false;
+      $('#fConsent').focus();
+      return;
+    }
     err.hidden = true;
-    var url = 'https://wa.me/' + D.WHATSAPP + '?text=' + encodeURIComponent(buildMessage());
-    track('whatsapp_clicked', { total: subtotal() + deliveryFee(), items: count() });
+    var text = buildMessage();
+    track('order_prepared', { total: subtotal() + deliveryFee(), items: count() });
+    copyText(text);
     // cart is intentionally kept: the message may not have been sent yet
-    var w = window.open(url, '_blank');
-    if (w) { try { w.opener = null; } catch (e) {} } else window.location.href = url;
-    note(T.waOpened);
+    var box = $('#coSend'), btns = $('#coSendBtns');
+    $('#coSendText').value = text;
+    btns.innerHTML = '';
+    var C = D.CHANNELS || {};
+    var add = function (label, href, primary) {
+      var a = el('a', 'btn ' + (primary ? 'btn-light' : 'btn-ghost'), label);
+      a.href = href; if (/^https?:/.test(href)) { a.target = '_blank'; a.rel = 'noopener'; }
+      a.addEventListener('click', function () { copyText(text); track('order_channel', { channel: label }); });
+      btns.appendChild(a);
+    };
+    if (C.telegram) add('Открыть Telegram', 'https://t.me/+' + C.telegram, true);
+    if (C.max) add('Открыть MAX', C.max, !C.telegram);
+    if (C.whatsapp) add('Открыть WhatsApp', 'https://wa.me/' + C.whatsapp + '?text=' + encodeURIComponent(text), false);
+    (C.phones || []).forEach(function (ph) { add('Позвонить ' + ph, 'tel:' + ph.replace(/[^+\d]/g, ''), false); });
+    box.hidden = false;
+    box.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
+    note(T.copied);
   });
+
+  function copyText(text) {
+    try { navigator.clipboard.writeText(text).catch(function () {}); } catch (e) {}
+  }
 
   /* ======================================================================
      QUIET STATUS NOTE
@@ -642,7 +663,18 @@
       setTimeout(function () { id === 'top' ? window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' }) : scrollToId(id); }, wasOpen ? 380 : 0);
     });
   });
-  $$('[data-wa-link]').forEach(function (a) { a.href = 'https://wa.me/' + D.WHATSAPP; });
+  $$('[data-wa-link]').forEach(function (a) { a.remove(); });
+  /* seller details in the footer (required for distance selling) */
+  (function () {
+    var L = D.LEGAL || {}, s = $('#sellerInfo');
+    if (!s) return;
+    var parts = [L.seller || 'Продавец: сведения уточняются'];
+    if (L.inn) parts.push('ИНН ' + L.inn);
+    if (L.ogrnip) parts.push('ОГРНИП ' + L.ogrnip);
+    if (L.address) parts.push(L.address);
+    if (L.email) parts.push(L.email);
+    s.textContent = parts.join(' · ');
+  })();
 
   var hdr = $('#hdr');
   var ticking = false;
