@@ -647,7 +647,7 @@
     if (!trigger || !sheet) return;
     function closeChoose() { sheet.hidden = true; doc.classList.remove('sheet-open'); }
     trigger.addEventListener('click', function () { sheet.hidden = false; doc.classList.add('sheet-open'); });
-    $('[data-choose-close]', sheet).forEach(function (x) { x.addEventListener('click', closeChoose); });
+    sheet.querySelectorAll('[data-choose-close]').forEach(function (x) { x.addEventListener('click', closeChoose); });
     var self = $('#chooseSelf');
     if (self) self.addEventListener('click', function (e) {
       e.preventDefault(); closeChoose();
