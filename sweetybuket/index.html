@@ -25,9 +25,8 @@
   (function () {
     var d = document.documentElement;
     d.classList.add('js');
-    var seen = false;
-    try { seen = sessionStorage.getItem('sb_intro') === '1'; } catch (e) {}
-    d.classList.add(seen ? 'intro-done' : 'intro-pending');
+    /* Brand curtain plays on every fresh page entry. */
+    d.classList.add('intro-pending');
     /* failsafe: never leave the page hidden behind the intro */
     setTimeout(function () {
       if (d.classList.contains('intro-pending') && !window.LF_READY) {
