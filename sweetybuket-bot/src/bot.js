@@ -7,7 +7,7 @@ const PAYMENT_URL=process.env.PAYMENT_URL || '';
 if(!TOKEN) throw new Error('TELEGRAM_BOT_TOKEN is required');
 const API='https://api.telegram.org/bot'+TOKEN;
 const SITE='https://xugushik-source.github.io/flowers/sweetybuket/';
-const IMG='https://raw.githubusercontent.com/xugushik-source/flowers/main/sweetybuket/assets/optimized/';
+const IMG='https://xugushik-source.github.io/flowers/sweetybuket/assets/optimized/';
 const sessions=new Map();
 const reply=(rows)=>({keyboard:rows.map(r=>r.map(text=>({text}))),resize_keyboard:true});
 const inline=(rows)=>({inline_keyboard:rows});
