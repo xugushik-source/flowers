@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Sweety Buket — catalogue data
+   SweetyBuket — catalogue data
    Photos and names come from Instagram @sweetybuket (`source` = the post).
    PRICES ARE NOT KNOWN YET: `price: null` shows "Цена по запросу" and the
    order goes to WhatsApp for confirmation. Put a number to show a price.
@@ -141,7 +141,7 @@ window.LF_TEXT = {
   cardFor: 'Записка',
   surprise: 'Это сюрприз',
   wa: {
-    hello: 'Здравствуйте! Хочу заказать с сайта Sweety Buket:',
+    hello: 'Здравствуйте! Хочу заказать с сайта SweetyBuket:',
     bouquet: 'Букет',
     qty: 'Количество',
     extra: 'Дополнительно',

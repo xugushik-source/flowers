@@ -1,4 +1,4 @@
-# Sweety Buket
+# SweetyBuket
 
 Сайт на общем каркасе с La Fleur, свой слой бренда в `assets/css/sweety.css`. Фото и видео из Instagram @sweetybuket.
 
