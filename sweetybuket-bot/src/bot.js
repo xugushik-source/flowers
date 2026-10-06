@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { createHash } from 'node:crypto';
 import { byId, products, money } from './catalog.js';
 
 const TOKEN=process.env.TELEGRAM_BOT_TOKEN;
@@ -121,20 +122,49 @@ async function handleCallback(q){
  if(d==='paid'){await send(ADMIN,'💳 Клиент нажал «Я оплатил». Нужна ручная проверка оплаты.\n'+(s.summary||''));return send(chat,'Спасибо. Мы получили отметку об оплате. Менеджер проверит поступление и подтвердит заказ. 🌷',inline([[btn('🏠 Главное меню','home')]]));}
 }
 const PORT=Number(process.env.PORT||10000);
-http.createServer((req,res)=>{res.writeHead(200,{'content-type':'application/json; charset=utf-8'});res.end(JSON.stringify({ok:true,service:'sweety-buket-bot'}));}).listen(PORT,'0.0.0.0',()=>console.log('Health server listening on '+PORT));
-// Render при деплое шлёт SIGTERM старому экземпляру: выходим сразу, чтобы два getUpdates не конфликтовали (409).
-// Неподтверждённые апдейты Telegram отдаст новому экземпляру.
-for(const sig of ['SIGTERM','SIGINT'])process.on(sig,()=>{console.log(sig+': stopping polling');process.exit(0);});
+// Webhook, если сервис доступен снаружи (Render сам задаёт RENDER_EXTERNAL_URL).
+// Бесплатный Render усыпляет сервис без входящих HTTP-запросов; при long polling
+// входящих нет, и бот засыпает. Webhook-запрос от Telegram будит сервис сам.
+const PUBLIC_URL=(process.env.WEBHOOK_URL||process.env.RENDER_EXTERNAL_URL||'').replace(/\/$/,'');
+const HOOK_PATH='/telegram/webhook';
+// Секрет для заголовка X-Telegram-Bot-Api-Secret-Token — производный от токена, отдельная переменная не нужна.
+const HOOK_SECRET=createHash('sha256').update('sweety-hook:'+TOKEN).digest('hex').slice(0,48);
+const seen=new Set();
+async function handleUpdate(u){
+ if(seen.has(u.update_id))return; // Telegram повторяет доставку, если ответ запоздал
+ seen.add(u.update_id); if(seen.size>500)seen.delete(seen.values().next().value);
+ try{if(u.callback_query)await handleCallback(u.callback_query);else if(u.message?.text)await handleText(u.message.chat.id,u.message.text.trim(),u.message.from||{});}
+ catch(e){console.error('UPDATE_FAIL',u.update_id,e.message);} // ошибка одного апдейта не роняет бота
+}
+const health=(res)=>{res.writeHead(200,{'content-type':'application/json; charset=utf-8'});res.end(JSON.stringify({ok:true,service:'sweety-buket-bot'}));};
+http.createServer((req,res)=>{
+ if(req.method==='POST'&&req.url===HOOK_PATH){
+  if(req.headers['x-telegram-bot-api-secret-token']!==HOOK_SECRET){res.writeHead(403);return res.end();}
+  let body='';req.on('data',c=>{body+=c;if(body.length>1e6)req.destroy();});
+  req.on('end',()=>{res.writeHead(200);res.end('ok'); // отвечаем сразу, обрабатываем после
+   let u;try{u=JSON.parse(body);}catch{return;} handleUpdate(u);});
+  return;
+ }
+ health(res);
+}).listen(PORT,'0.0.0.0',()=>console.log('Health server listening on '+PORT));
+for(const sig of ['SIGTERM','SIGINT'])process.on(sig,()=>{console.log(sig+': stopping');process.exit(0);});
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-let offset=0; console.log('Sweety Buket bot 2.0 started');
-while(true){
- let updates;
- try{updates=await api('getUpdates',{offset,timeout:45,allowed_updates:['message','callback_query']});}
- catch(e){const conflict=/Conflict/.test(e.message);console.error(conflict?'POLL_CONFLICT (другой экземпляр ещё работает)':'POLL_ERROR',e.message);await sleep(conflict?5000:2000);continue;}
- for(const u of updates){
-  offset=u.update_id+1;
-  // Ошибка одного апдейта не должна ронять обработку остальных.
-  try{if(u.callback_query)await handleCallback(u.callback_query);else if(u.message?.text)await handleText(u.message.chat.id,u.message.text.trim(),u.message.from||{});}
-  catch(e){console.error('UPDATE_FAIL',u.update_id,e.message);}
+console.log('Sweety Buket bot 2.1 started');
+if(PUBLIC_URL){
+ // Не сбрасываем очередь: сообщения, пришедшие пока бот спал, будут доставлены.
+ for(let i=0;;i++){
+  try{await api('setWebhook',{url:PUBLIC_URL+HOOK_PATH,secret_token:HOOK_SECRET,allowed_updates:['message','callback_query'],max_connections:10});console.log('MODE webhook',PUBLIC_URL+HOOK_PATH);break;}
+  catch(e){console.error('SET_WEBHOOK_FAIL',e.message);await sleep(Math.min(30000,2000*2**i));}
+ }
+}else{
+ // Локальный запуск без публичного адреса — long polling.
+ await api('deleteWebhook',{drop_pending_updates:false}).catch(e=>console.error('DELETE_WEBHOOK_FAIL',e.message));
+ console.log('MODE polling');
+ let offset=0;
+ while(true){
+  let updates;
+  try{updates=await api('getUpdates',{offset,timeout:45,allowed_updates:['message','callback_query']});}
+  catch(e){const conflict=/Conflict/.test(e.message);console.error(conflict?'POLL_CONFLICT':'POLL_ERROR',e.message);await sleep(conflict?5000:2000);continue;}
+  for(const u of updates){offset=u.update_id+1;await handleUpdate(u);}
  }
 }
